@@ -1,0 +1,132 @@
+C251 COMPILER V5.60.0,  zf_adc                                                             25/09/22  22:18:57  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_adc
+OBJECT MODULE PLACED IN .\Out_File\zf_adc.obj
+COMPILER INVOKED BY: D:\Keil_v5\C251\BIN\C251.EXE ..\..\Libraries\seekfree_libraries\zf_adc.c XSMALL INTR2 WARNINGLEVEL(
+                    -3) BROWSE INCDIR(..\..\Libraries\libraries;..\..\Libraries\seekfree_libraries;..\..\Libraries\seekfree_peripheral;..\COD
+                    -E;..\USER\inc;..\USER\src) DEBUG PRINT(.\Out_File\zf_adc.lst) TABS(2) OBJECT(.\Out_File\zf_adc.obj) 
+
+stmt  level    source
+
+    1          /********************************************************************************************************
+             -*************
+    2           * COPYRIGHT NOTICE
+    3           * Copyright (c) 2020,逐飞科技
+    4           * All rights reserved.
+    5           * 技术讨论QQ群：一群：179029047(已满)  二群：244861897(已满)  三群：824575535
+    6           *
+    7           * 以下所有内容版权均属逐飞科技所有，未经允许不得用于商业用途，
+    8           * 欢迎各位使用并传播本程序，修改内容时必须保留逐飞科技的版权声明。
+    9           *
+   10           * @file          adc
+   11           * @company       成都逐飞科技有限公司
+   12           * @author        逐飞科技(QQ790875685)
+   13           * @version       查看doc内version文件 版本说明
+   14           * @Software    MDK FOR C251 V5.60
+   15           * @Target core   STC16F40K128
+   16           * @Taobao      https://seekfree.taobao.com/
+   17           * @date          2020-4-14
+   18           ********************************************************************************************************
+             -************/
+   19          
+   20          
+   21          #include "zf_adc.h"
+   22          #include "intrins.h"
+   23          
+   24          
+   25          //-------------------------------------------------------------------------------------------------------
+             -------------
+   26          //  @brief      ADC初始化
+   27          //  @param      adcn            选择ADC通道
+   28          //  @param      speed         ADC时钟频率
+   29          //  @return     void
+   30          //  Sample usage:               adc_init(ADC_P10,ADC_SYSclk_DIV_2);//初始化P1.0为ADC功能,ADC时钟频率：SYS
+             -clk/2
+   31          //-------------------------------------------------------------------------------------------------------
+             -------------
+   32          void adc_init(ADCN_enum adcn,ADC_SPEED_enum speed)
+   33          {
+   34   1        ADC_CONTR |= 1<<7;        //1 ：打开 ADC 电源
+   35   1        
+   36   1        ADC_CONTR &= (0xF0);      //清除ADC_CHS[3:0] ： ADC 模拟通道选择位
+   37   1        ADC_CONTR |= adcn;
+   38   1        
+   39   1        if((adcn >> 3) == 1) //P0.0
+   40   1        {
+   41   2          //IO口需要设置为高阻输入
+   42   2          P0M0 &= ~(1 << (adcn & 0x07));
+   43   2          P0M1 |= (1 << (adcn & 0x07));
+   44   2        }
+   45   1        else if((adcn >> 3) == 0) //P1.0  
+   46   1        {
+   47   2          //IO口需要设置为高阻输入
+   48   2          P1M0 &= ~(1 << (adcn & 0x07));
+   49   2            P1M1 |= (1 << (adcn & 0x07));
+   50   2        }
+   51   1      
+   52   1        ADCCFG |= speed&0x0F;     //ADC时钟频率SYSclk/2/speed&0x0F;
+C251 COMPILER V5.60.0,  zf_adc                                                             25/09/22  22:18:57  PAGE 2   
+
+   53   1        
+   54   1        ADCCFG |= 1<<5;         //转换结果右对齐。 ADC_RES 保存结果的高 2 位， ADC_RESL 保存结果的低 8 位。
+   55   1      }
+   56          
+   57          
+   58          
+   59          //-------------------------------------------------------------------------------------------------------
+             -------------
+   60          //  @brief      ADC转换一次
+   61          //  @param      adcn            选择ADC通道
+   62          //  @param      resolution      分辨率
+   63          //  @return     void
+   64          //  Sample usage:               adc_once(ADC_P10, ADC_10BIT);
+   65          //-------------------------------------------------------------------------------------------------------
+             -------------
+   66          uint16 adc_once(ADCN_enum adcn,ADCRES_enum resolution)
+   67          {
+   68   1        uint16 adc_value;
+   69   1        
+   70   1        ADC_CONTR &= (0xF0);      //清除ADC_CHS[3:0] ： ADC 模拟通道选择位
+   71   1        ADC_CONTR |= adcn;
+   72   1        
+   73   1        ADC_CONTR |= 0x40;        // 启动 AD 转换
+   74   1        while (!(ADC_CONTR & 0x20));    // 查询 ADC 完成标志
+   75   1        ADC_CONTR &= ~0x20;       // 清完成标志
+   76   1        
+   77   1        adc_value = ADC_RES;        //存储 ADC 的 12 位结果的高 4 位
+   78   1        adc_value <<= 8;
+   79   1        adc_value |= ADC_RESL;      //存储 ADC 的 12 位结果的低 8 位
+   80   1        
+   81   1        ADC_RES = 0;
+   82   1        ADC_RESL = 0;
+   83   1        
+   84   1        adc_value >>= resolution;   //取多少位
+   85   1        
+   86   1      
+   87   1        return adc_value;
+   88   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       140     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

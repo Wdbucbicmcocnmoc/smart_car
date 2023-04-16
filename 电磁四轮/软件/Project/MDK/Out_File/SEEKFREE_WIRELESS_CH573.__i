@@ -1,0 +1,1 @@
+"..\..\Libraries\seekfree_peripheral\SEEKFREE_WIRELESS_CH573.c" XSMALL INTR2 WARNINGLEVEL (3) BROWSE INCDIR(..\..\Libraries\libraries;..\..\Libraries\seekfree_libraries;..\..\Libraries\seekfree_peripheral;..\CODE;..\USER\inc;..\USER\src) DEBUG PRINT(.\Out_File\SEEKFREE_WIRELESS_CH573.lst) TABS (2) OBJECT(.\Out_File\SEEKFREE_WIRELESS_CH573.obj)

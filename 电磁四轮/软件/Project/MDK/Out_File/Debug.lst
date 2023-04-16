@@ -1,0 +1,1208 @@
+C251 COMPILER V5.60.0,  Debug                                                              28/08/22  23:11:03  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE Debug
+OBJECT MODULE PLACED IN .\Out_File\Debug.obj
+COMPILER INVOKED BY: D:\keil5\C251\BIN\C251.EXE Debug.c XSMALL INTR2 WARNINGLEVEL(3) BROWSE INCDIR(..\..\Libraries\libra
+                    -ries;..\..\Libraries\seekfree_libraries;..\..\Libraries\seekfree_peripheral;..\CODE;..\USER\inc;..\USER\src) DEBUG PRINT
+                    -(.\Out_File\Debug.lst) TABS(2) OBJECT(.\Out_File\Debug.obj) 
+
+stmt  level    source
+
+    1          #include "headfile.h"
+    2          #include "myfile.h"
+    3          
+    4          uint8 numm = 1;  //�����˵� ��������ѡ�����
+    5          uint8 num = 1;   //һ���˵� ��������ѡ�����
+    6          uint8 nummm = 1; //�����˵� ��������ѡ�����
+    7          uint8 nux;
+    8          
+    9          void menu() //�˵�������ʾ����
+   10          {
+   11   1        oled_p6x8str(5, num, "#");
+   12   1        oled_p6x8str(60, 0, "MENU");
+   13   1        oled_p6x8str(30, 1, "ADC_SHOW");
+   14   1        oled_p6x8str(30, 2, "xunjiflag");
+   15   1        oled_p6x8str(30, 3, "MOTRO_PID");
+   16   1        oled_p6x8str(30, 4, "MOTRO_Ctro");
+   17   1        oled_p6x8str(30, 5, "DUOJI_Ctro");
+   18   1        oled_p6x8str(30, 6, "yuanshi_ADC");
+   19   1      }
+   20          void xunjiflag()
+   21          {
+   22   1        while (1)
+   23   1        {
+   24   2          //
+   25   2          oled_p6x8str(10, 1, "spaceflag");
+   26   2          oled_p6x8str(10, 2, "wan_xishu");
+   27   2          oled_p6x8str(10, 3, "zhi_xishu");
+   28   2          // oled_p6x8str(5, 4, "jifenjuli");
+   29   2          oled_p6x8str(10, 4, "o_library");
+   30   2          oled_p6x8str(10, 5, "ruku_time");
+   31   2          oled_p6x8str(10, 6, "out_ku");
+   32   2          // oled_p6x8str(10, 6, "out_ku");
+   33   2          oled_p6x8str(10, 7, "po_order");
+   34   2          oled_int16(80, 1, spaceflag);     //���������ֵ
+   35   2          oled_int16(80, 2, a);             //�����ȺͷŴ�ϵ��
+   36   2          oled_int16(80, 3, b);             //ֱ����ȺͷŴ�ϵ��
+   37   2          // oled_printf_float(60, 4, Int_length, 2, 3);
+   38   2          oled_int16(80, 4, library);
+   39   2          oled_int16(80, 5, ruku_time);
+   40   2          oled_int16(80, 6, out_ku);
+   41   2          oled_int16(80, 7, Po_control_order);
+   42   2          if (numm == 0)
+   43   2          {
+   44   3            oled_p6x8str(5, 0, "#");
+   45   3          }
+   46   2          if (P37 == 0)
+   47   2          {
+   48   3            delay_ms(20);
+   49   3            if (P37 == 0)
+   50   3            {
+   51   4              while (P37 == 0)
+   52   4                ;
+   53   4              numm = numm + 1;
+   54   4              if (numm > 7)
+   55   4              {
+   56   5                numm = 0;
+   57   5                oled_p6x8str(5, 7, " ");
+C251 COMPILER V5.60.0,  Debug                                                              28/08/22  23:11:03  PAGE 2   
+
+   58   5              }
+   59   4              nux = numm - 1;
+   60   4              oled_p6x8str(5, numm, "#");
+   61   4              oled_p6x8str(5, nux, " ");
+   62   4            }
+   63   3          }
+   64   2      
+   65   2          if (P70 == 0)
+   66   2          {
+   67   3            delay_ms(30);
+   68   3            if (P70 == 0)
+   69   3            {
+   70   4              while (P70 == 0)
+   71   4                ;
+   72   4              switch (numm)
+   73   4              {
+   74   5             
+   75   5              case 1:
+   76   5                spaceflag = spaceflag + 1;
+   77   5                break;
+   78   5              case 2:
+   79   5                a += 1;
+   80   5                break;
+   81   5              case 3:
+   82   5                b += 1;
+   83   5                break;
+   84   5              // case 4:
+   85   5              //   Int_length += 0.1;
+   86   5              //   break;
+   87   5              // case 5:
+   88   5              //   Int_length += 0.01;
+   89   5              //   break;
+   90   5              // case 6:
+   91   5              //   Int_length += 0.001;
+   92   5              //   break;
+   93   5              case 4:
+   94   5                library += 1;
+   95   5                break;
+   96   5              case 5:
+   97   5                ruku_time += 2;
+   98   5                break;
+   99   5              case 6:
+  100   5                out_ku = 0;
+  101   5                break;
+  102   5                case 7:
+  103   5                Po_control_order = 1;
+  104   5                break;
+  105   5              default:
+  106   5                break;
+  107   5              }
+  108   4            }
+  109   3          }
+  110   2          if (P72 == 0)
+  111   2          {
+  112   3            delay_ms(30);
+  113   3            if (P72 == 0)
+  114   3            {
+  115   4              while (P72 == 0)
+  116   4                ;
+  117   4              switch (numm)
+  118   4              {
+  119   5             
+  120   5              case 1:
+  121   5                spaceflag = spaceflag - 1;
+  122   5                break;
+  123   5              case 2:
+C251 COMPILER V5.60.0,  Debug                                                              28/08/22  23:11:03  PAGE 3   
+
+  124   5                a -= 1;
+  125   5                break;
+  126   5              case 3:
+  127   5                b -= 1;
+  128   5                break;
+  129   5                // case 4:
+  130   5                //   Int_length -= 0.1;
+  131   5                //   break;
+  132   5                // case 5:
+  133   5                //   Int_length -= 0.01;
+  134   5                //   break;
+  135   5                // case 6:
+  136   5                //   Int_length -= 0.001;
+  137   5                //   break;
+  138   5              case 4:
+  139   5                library -= 1;
+  140   5                break;
+  141   5              case 5:
+  142   5                ruku_time -= 2;
+  143   5                break;
+  144   5              case 6:
+  145   5                out_ku = 1;
+  146   5                break;
+  147   5              case 7:
+  148   5              Po_control_order = 2;
+  149   5              break;
+  150   5              default:
+  151   5                break;
+  152   5              }
+  153   4            }
+  154   3          }
+  155   2          if (P54 == 0)
+  156   2          {
+  157   3            delay_ms(20);
+  158   3            if (P54 == 0)
+  159   3            {
+  160   4              while (P54 == 0)
+  161   4                ;
+  162   4              menu();
+  163   4              oled_fill(0x00);
+  164   4              break;
+  165   4            }
+  166   3          }
+  167   2        }
+  168   1      }
+  169          void ADC_SHOW() //�����ʾ����
+  170          {
+  171   1        while (1)
+  172   1        {
+  173   2          Read_ADC();
+  174   2          oled_int16(10, 0, GUI_AD[0]);
+  175   2          oled_int16(10, 1, GUI_AD[1]);
+  176   2          oled_int16(10, 2, GUI_AD[2]);
+  177   2          oled_int16(10, 3, GUI_AD[3]);
+  178   2          oled_int16(10, 4, GUI_AD[4]);
+  179   2          oled_int16(10, 5, GUI_AD[5]);
+  180   2          oled_int16(10, 6, GUI_AD[6]);
+  181   2      
+  182   2          oled_int16(50, 0, GUI_AD[7]);
+  183   2          oled_int16(50, 1, GUI_AD[8]);
+  184   2          oled_int16(50, 2, GUI_AD[9]);
+  185   2          oled_int16(50, 3, GUI_AD[10]);
+  186   2          oled_int16(50, 4, GUI_AD[11]);
+  187   2          oled_int16(50, 5, GUI_AD[12]);
+  188   2          if (P54 == 0)
+  189   2          {
+C251 COMPILER V5.60.0,  Debug                                                              28/08/22  23:11:03  PAGE 4   
+
+  190   3            delay_ms(20);
+  191   3            if (P54 == 0)
+  192   3            {
+  193   4              while (P54 == 0)
+  194   4                ;
+  195   4              menu();
+  196   4              oled_fill(0x00);
+  197   4              break;
+  198   4            }
+  199   3          }
+  200   2        }
+  201   1      }
+  202          void DUOJI_Ctro() //������ƺ���
+  203          {
+  204   1        while (1)
+  205   1        {
+  206   2          //        oled_p6x8str(10,0,"kp_y:");//���һ�p
+  207   2          //        oled_p6x8str(10,1,"kd_y:");//���һ�d
+  208   2          //        oled_printf_float(80,0,kp_y,2,3);
+  209   2          //        oled_printf_float(80,1,kd_y,2,3);
+  210   2          //       oled_p6x8str(10,2,"kp_zr");//����p
+  211   2          //        oled_printf_float(80,2,kp_zr,2,3);
+  212   2          //        oled_p6x8str(10,3,"kd_zr");//����d
+  213   2          //         oled_printf_float(80,3,kd_zr,2,3);
+  214   2          //       oled_p6x8str(10,4,"kp_yz");//��ѭ��p
+  215   2          //         oled_printf_float(80,4,kp_yz,2,3);
+  216   2          //       oled_p6x8str(10,5,"kd_yz");////��ѭ��d
+  217   2          //         oled_printf_float(80,5,kd_yz,2,3);
+  218   2          //       oled_p6x8str(10,6,"kp_ryc");//����ѭ��p
+  219   2          //        oled_printf_float(80,6,kp_ryc,2,3);//ADDD_valu[i]
+  220   2          //       oled_p6x8str(10,7,"kd_ryc");//����ѭ��d
+  221   2          //        oled_printf_float(80,7,kd_ryc,2,3);
+  222   2          //         oled_p6x8str(5,numm,"#");
+  223   2          oled_p6x8str(10, 0, "speed_adjust");
+  224   2          oled_p6x8str(10, 1, "annulus");
+  225   2          oled_p6x8str(10, 2, "sancha_pd");
+  226   2          oled_p6x8str(10, 3, "zhidao_pd");
+  227   2          oled_p6x8str(10, 4, "huan_xishu");
+  228   2          oled_p6x8str(10, 5, "mid");
+  229   2          oled_int16(80, 5, S3010_mid);
+  230   2          if (numm == 0)
+  231   2          {
+  232   3            oled_p6x8str(5, 0, "#");
+  233   3          }
+  234   2          if (P37 == 0)
+  235   2          {
+  236   3            delay_ms(20);
+  237   3            if (P37 == 0)
+  238   3            {
+  239   4              while (P37 == 0)
+  240   4                ;
+  241   4              //   oled_fill(0x00);
+  242   4              numm = numm + 1;
+  243   4              if (numm > 6)
+  244   4              {
+  245   5                numm = 0;
+  246   5                oled_p6x8str(5, 5, " ");
+  247   5              }
+  248   4              nux = numm - 1;
+  249   4              oled_p6x8str(5, numm, "#");
+  250   4              oled_p6x8str(5, nux, " ");
+  251   4            }
+  252   3          }
+  253   2          if (P70 == 0)
+  254   2          {
+  255   3            delay_ms(30);
+C251 COMPILER V5.60.0,  Debug                                                              28/08/22  23:11:03  PAGE 5   
+
+  256   3            if (P70 == 0)
+  257   3            {
+  258   4              while (P70 == 0)
+  259   4                ;
+  260   4              oled_fill(0x00);
+  261   4              switch (numm)
+  262   4              {
+  263   5              case 0:
+  264   5                E_speed();
+  265   5                break;
+  266   5              case 1:
+  267   5                annulus_PD();
+  268   5                break;
+  269   5              case 2:
+  270   5                sancha_pd();
+  271   5                break;
+  272   5              case 3:
+  273   5                zhidao_pd();
+  274   5                break;
+  275   5              case 4:
+  276   5                huan_xishu();
+  277   5                break;
+  278   5              case 5:
+  279   5                S3010_mid += 1;
+  280   5                pwm_duty(PWMB_CH1_P74, S3010_mid);
+  281   5                break;
+  282   5              case 6:
+  283   5                S3010_mid += 5;
+  284   5                pwm_duty(PWMB_CH1_P74, S3010_mid);
+  285   5              default:
+  286   5                break;
+  287   5              }
+  288   4            }
+  289   3          }
+  290   2          if (P72 == 0)
+  291   2          {
+  292   3            delay_ms(30);
+  293   3            if (P72 == 0)
+  294   3            {
+  295   4              while (P72 == 0)
+  296   4                ;
+  297   4              switch (numm)
+  298   4              {
+  299   5      
+  300   5              case 5:
+  301   5                S3010_mid -= 1;
+  302   5                pwm_duty(PWMB_CH1_P74, S3010_mid);
+  303   5                break;
+  304   5              case 6:
+  305   5                S3010_mid -= 5;
+  306   5                pwm_duty(PWMB_CH1_P74, S3010_mid);
+  307   5              default:
+  308   5                break;
+  309   5              }
+  310   4            }
+  311   3          }
+  312   2          if (P54 == 0)
+  313   2          {
+  314   3            delay_ms(20);
+  315   3            if (P54 == 0)
+  316   3            {
+  317   4              while (P54 == 0)
+  318   4                ;
+  319   4              oled_fill(0x00);
+  320   4              menu();
+  321   4              break;
+C251 COMPILER V5.60.0,  Debug                                                              28/08/22  23:11:03  PAGE 6   
+
+  322   4            }
+  323   3          }
+  324   2        }
+  325   1      }
+  326          
+  327          void huan_xishu()
+  328          {
+  329   1        while (1)
+  330   1        {
+  331   2          oled_p6x8str(10, 0, "SL_in:");
+  332   2          oled_int16(80, 0, SL_In_xishu);
+  333   2          oled_p6x8str(10, 1, "SL_out:");
+  334   2          oled_int16(80, 1, SL_Out_xishu);
+  335   2          oled_p6x8str(10, 2, "SR_in:");
+  336   2          oled_int16(80, 2, SR_In_xishu);
+  337   2          oled_p6x8str(10, 3, "SR_out:");
+  338   2          oled_int16(80, 3, SR_Out_xishu);
+  339   2      
+  340   2      
+  341   2          if (nummm == 0)
+  342   2          {
+  343   3            oled_p6x8str(5, 0, "#");
+  344   3          }
+  345   2          if (P37 == 0)
+  346   2          {
+  347   3            delay_ms(20);
+  348   3            if (P37 == 0)
+  349   3            {
+  350   4              while (P37 == 0)
+  351   4                ;
+  352   4              nummm = nummm + 1;
+  353   4              if (nummm > 3)
+  354   4              {
+  355   5                nummm = 0;
+  356   5                oled_p6x8str(5, 3, " ");
+  357   5              }
+  358   4              nux = nummm - 1;
+  359   4              oled_p6x8str(5, nummm, "#");
+  360   4              oled_p6x8str(5, nux, " ");
+  361   4            }
+  362   3          }
+  363   2          if (P70 == 0)
+  364   2          {
+  365   3            delay_ms(30);
+  366   3            if (P70 == 0)
+  367   3            {
+  368   4              while (P70 == 0)
+  369   4                ;
+  370   4              switch (nummm)
+  371   4              {
+  372   5      
+  373   5              case 0:
+  374   5                SL_In_xishu += 1;
+  375   5                break;
+  376   5              case 1:
+  377   5                SL_Out_xishu += 1;
+  378   5                break;
+  379   5              case 2:
+  380   5                SR_In_xishu += 1;
+  381   5                break;
+  382   5              case 3:
+  383   5                SR_Out_xishu += 1;
+  384   5                break;
+  385   5              default:
+  386   5                break;
+  387   5              }
+C251 COMPILER V5.60.0,  Debug                                                              28/08/22  23:11:03  PAGE 7   
+
+  388   4            }
+  389   3          }
+  390   2      
+  391   2          if (P72 == 0)
+  392   2          {
+  393   3            delay_ms(30);
+  394   3            if (P72 == 0)
+  395   3            {
+  396   4              while (P72 == 0)
+  397   4                ;
+  398   4              switch (nummm)
+  399   4              {
+  400   5              case 0:
+  401   5                SL_In_xishu -= 1;
+  402   5                break;
+  403   5              case 1:
+  404   5                SL_Out_xishu -= 1;
+  405   5                break;
+  406   5              case 2:
+  407   5                SR_In_xishu -= 1;
+  408   5                break;
+  409   5              case 3:
+  410   5                SR_Out_xishu -= 1;
+  411   5                break;
+  412   5              default:
+  413   5                break;
+  414   5              }
+  415   4            }
+  416   3          }
+  417   2          if (P54 == 0)
+  418   2          {
+  419   3            delay_ms(20);
+  420   3            if (P54 == 0)
+  421   3            {
+  422   4              while (P54 == 0)
+  423   4                ;
+  424   4              oled_fill(0x00);
+  425   4              break;
+  426   4            }
+  427   3          }
+  428   2        }
+  429   1      }
+  430          
+  431          void sancha_pd()
+  432          {
+  433   1        while (1)
+  434   1        {
+  435   2          oled_p6x8str(10, 1, "cha_zuo_p:");
+  436   2          oled_printf_float(80, 1, cha_zuo_p, 3, 3);
+  437   2          oled_p6x8str(10, 2, "cha_zuo_d:");
+  438   2          oled_printf_float(80, 2, cha_zuo_d, 3, 3);
+  439   2          oled_p6x8str(10, 3, "cha_you_p:");
+  440   2          oled_printf_float(80, 3, cha_you_p, 3, 3);
+  441   2          oled_p6x8str(10, 4, "cha_you_d:");
+  442   2          oled_printf_float(80, 4, cha_you_d, 3, 3);
+  443   2          
+  444   2          if (nummm == 0)
+  445   2          {
+  446   3            oled_p6x8str(5, 0, "#");
+  447   3          }
+  448   2          if (P37 == 0)
+  449   2          {
+  450   3            delay_ms(20);
+  451   3            if (P37 == 0)
+  452   3            {
+  453   4              while (P37 == 0)
+C251 COMPILER V5.60.0,  Debug                                                              28/08/22  23:11:03  PAGE 8   
+
+  454   4                ;
+  455   4              nummm = nummm + 1;
+  456   4              if (nummm > 7)
+  457   4              {
+  458   5                nummm = 0;
+  459   5                oled_p6x8str(5, 7, " ");
+  460   5              }
+  461   4              nux = nummm - 1;
+  462   4              oled_p6x8str(5, nummm, "#");
+  463   4              oled_p6x8str(5, nux, " ");
+  464   4            }
+  465   3          }
+  466   2          if (P70 == 0)
+  467   2          {
+  468   3            delay_ms(30);
+  469   3            if (P70 == 0)
+  470   3            {
+  471   4              while (P70 == 0)
+  472   4                ;
+  473   4              switch (nummm)
+  474   4              {
+  475   5      
+  476   5               
+  477   5              case 1:
+  478   5                cha_zuo_p += 0.1;
+  479   5                break;
+  480   5              case 2:
+  481   5                cha_zuo_d += 0.1;
+  482   5                break;
+  483   5              case 3:
+  484   5                cha_you_p += 0.1;
+  485   5                break;
+  486   5              case 4:
+  487   5                cha_you_d += 0.1;
+  488   5                break;
+  489   5             
+  490   5              default:
+  491   5                break;
+  492   5              }
+  493   4            }
+  494   3          }
+  495   2      
+  496   2          if (P72 == 0)
+  497   2          {
+  498   3            delay_ms(30);
+  499   3            if (P72 == 0)
+  500   3            {
+  501   4              while (P72 == 0)
+  502   4                ;
+  503   4              switch (nummm)
+  504   4              {
+  505   5              case 1:
+  506   5                cha_zuo_p -= 0.1;
+  507   5                break;
+  508   5              case 2:
+  509   5                cha_zuo_d -= 0.1;
+  510   5                break;
+  511   5              case 3:
+  512   5                cha_you_p -= 0.1;
+  513   5                break;
+  514   5              case 4:
+  515   5                cha_you_d -= 0.1;
+  516   5                break;
+  517   5              default:
+  518   5                break;
+  519   5              }
+C251 COMPILER V5.60.0,  Debug                                                              28/08/22  23:11:03  PAGE 9   
+
+  520   4            }
+  521   3          }
+  522   2          if (P54 == 0)
+  523   2          {
+  524   3            delay_ms(20);
+  525   3            if (P54 == 0)
+  526   3            {
+  527   4              while (P54 == 0)
+  528   4                ;
+  529   4              oled_fill(0x00);
+  530   4              // menu();
+  531   4              break;
+  532   4            }
+  533   3          }
+  534   2        }
+  535   1      }
+  536          void zhidao_pd()
+  537          {
+  538   1        while (1)
+  539   1        {
+  540   2          oled_p6x8str(10, 1, "zhidao_p:");
+  541   2          oled_printf_float(80, 1, zhidao_p, 3, 3);
+  542   2          oled_p6x8str(10, 2, "zhidao_d:");
+  543   2          oled_printf_float(80, 2, zhidao_d, 3, 3);
+  544   2          if (nummm == 0)
+  545   2          {
+  546   3            oled_p6x8str(5, 0, "#");
+  547   3          }
+  548   2          if (P37 == 0)
+  549   2          {
+  550   3            delay_ms(20);
+  551   3            if (P37 == 0)
+  552   3            {
+  553   4              while (P37 == 0)
+  554   4                ;
+  555   4              nummm = nummm + 1;
+  556   4              if (nummm > 7)
+  557   4              {
+  558   5                nummm = 0;
+  559   5                oled_p6x8str(5, 7, " ");
+  560   5              }
+  561   4              nux = nummm - 1;
+  562   4              oled_p6x8str(5, nummm, "#");
+  563   4              oled_p6x8str(5, nux, " ");
+  564   4            }
+  565   3          }
+  566   2          if (P70 == 0)
+  567   2          {
+  568   3            delay_ms(30);
+  569   3            if (P70 == 0)
+  570   3            {
+  571   4              while (P70 == 0)
+  572   4                ;
+  573   4              switch (nummm)
+  574   4              {
+  575   5      
+  576   5                
+  577   5              case 1:
+  578   5                zhidao_p += 0.1;
+  579   5                break;
+  580   5              case 2:
+  581   5                zhidao_d += 0.1;
+  582   5                break;
+  583   5              default:
+  584   5                break;
+  585   5              }
+C251 COMPILER V5.60.0,  Debug                                                              28/08/22  23:11:03  PAGE 10  
+
+  586   4            }
+  587   3          }
+  588   2      
+  589   2          if (P72 == 0)
+  590   2          {
+  591   3            delay_ms(30);
+  592   3            if (P72 == 0)
+  593   3            {
+  594   4              while (P72 == 0)
+  595   4                ;
+  596   4              switch (nummm)
+  597   4              {
+  598   5                //  case 0:
+  599   5                //    ruhuan_p-=0.1;
+  600   5                //    break;
+  601   5              case 1:
+  602   5                zhidao_p -= 0.1;
+  603   5                break;
+  604   5              case 2:
+  605   5                zhidao_d -= 0.1;
+  606   5                break;
+  607   5                //        case 3:
+  608   5                //  huanz_d-=0.1;
+  609   5                //  break;
+  610   5                //    case 4:
+  611   5                //  chuhuan_p-=0.1;
+  612   5                //  break;
+  613   5              case 5:
+  614   5                chuhuan_d -= 0.1;
+  615   5                break;
+  616   5                //                           case 6:
+  617   5                //                   kp_ryc-=0.1;
+  618   5                //                   break;
+  619   5                //                            case 7:
+  620   5                //                   kd_ryc-=0.1;
+  621   5                //                    break;
+  622   5              default:
+  623   5                break;
+  624   5              }
+  625   4            }
+  626   3          }
+  627   2          if (P54 == 0)
+  628   2          {
+  629   3            delay_ms(20);
+  630   3            if (P54 == 0)
+  631   3            {
+  632   4              while (P54 == 0)
+  633   4                ;
+  634   4              oled_fill(0x00);
+  635   4              // menu();
+  636   4              break;
+  637   4            }
+  638   3          }
+  639   2        }
+  640   1      }
+  641          void E_speed() //����Ԫ���ٶ�
+  642          {
+  643   1        while (1)
+  644   1        {
+  645   2          oled_p6x8str(10, 0, "base_fork:");
+  646   2          oled_int16(80, 0, base_fork);
+  647   2          oled_p6x8str(10, 1, "base_loop:");
+  648   2          oled_int16(80, 1, base_loop);
+  649   2          oled_p6x8str(10, 2, "base_ramp:");
+  650   2          oled_int16(80, 2, base_ramp);
+  651   2          oled_p6x8str(10, 3, "base_stra:");
+C251 COMPILER V5.60.0,  Debug                                                              28/08/22  23:11:03  PAGE 11  
+
+  652   2          oled_int16(80, 3, base_straight);
+  653   2          if (nummm == 1)
+  654   2          {
+  655   3            oled_p6x8str(5, 1, "#");
+  656   3          }
+  657   2          if (P37 == 0)
+  658   2          {
+  659   3            delay_ms(20);
+  660   3            if (P37 == 0)
+  661   3            {
+  662   4              while (P37 == 0)
+  663   4                ;
+  664   4              nummm = nummm + 1;
+  665   4              if (nummm > 3)
+  666   4              {
+  667   5                nummm = 0;
+  668   5                oled_p6x8str(5, 3, " ");
+  669   5              }
+  670   4              nux = nummm - 1;
+  671   4              oled_p6x8str(5, nummm, "#");
+  672   4              oled_p6x8str(5, nux, " ");
+  673   4            }
+  674   3          }
+  675   2          if (P70 == 0)
+  676   2          {
+  677   3            delay_ms(30);
+  678   3            if (P70 == 0)
+  679   3            {
+  680   4              while (P70 == 0)
+  681   4                ;
+  682   4              switch (nummm)
+  683   4              {
+  684   5              case 0:
+  685   5                base_fork += 5;
+  686   5                break;
+  687   5              case 1:
+  688   5                base_loop += 5;
+  689   5                break;
+  690   5              case 2:
+  691   5                base_ramp += 5;
+  692   5                break;
+  693   5              case 3:
+  694   5                base_straight += 5;
+  695   5                break;
+  696   5              default:
+  697   5                break;
+  698   5              }
+  699   4            }
+  700   3          }
+  701   2      
+  702   2          if (P72 == 0)
+  703   2          {
+  704   3            delay_ms(30);
+  705   3            if (P72 == 0)
+  706   3            {
+  707   4              while (P72 == 0)
+  708   4                ;
+  709   4              switch (nummm)
+  710   4              {
+  711   5              case 0:
+  712   5                base_fork -= 5;
+  713   5                break;
+  714   5              case 1:
+  715   5                base_loop -= 5;
+  716   5                break;
+  717   5              case 2:
+C251 COMPILER V5.60.0,  Debug                                                              28/08/22  23:11:03  PAGE 12  
+
+  718   5                base_ramp -= 5;
+  719   5                break;
+  720   5              case 3:
+  721   5                base_straight -= 5;
+  722   5                break;
+  723   5              default:
+  724   5                break;
+  725   5              }
+  726   4            }
+  727   3          }
+  728   2          if (P54 == 0)
+  729   2          {
+  730   3            delay_ms(20);
+  731   3            if (P54 == 0)
+  732   3            {
+  733   4              while (P54 == 0)
+  734   4                ;
+  735   4              oled_fill(0x00);
+  736   4              break;
+  737   4            }
+  738   3          }
+  739   2        }
+  740   1      }
+  741          
+  742          void annulus_PD()
+  743          {
+  744   1        while (1)
+  745   1        {
+  746   2          oled_p6x8str(10, 0, "ruh_p:"); //���һ�p
+  747   2          oled_p6x8str(10, 1, "ruh_d:"); //���һ�d
+  748   2          oled_printf_float(80, 0, ruhuan_p, 2, 3);
+  749   2          oled_printf_float(80, 1, ruhuan_d, 2, 3);
+  750   2          oled_p6x8str(10, 2, "huz_p"); //����p
+  751   2          oled_printf_float(80, 2, huanz_p, 2, 3);
+  752   2          oled_p6x8str(10, 3, "huz_d"); //����d
+  753   2          oled_printf_float(80, 3, huanz_d, 2, 3);
+  754   2          oled_p6x8str(10, 4, "cuh_p"); //����d
+  755   2          oled_printf_float(80, 4, chuhuan_p, 2, 3);
+  756   2          oled_p6x8str(10, 5, "cuh_d"); //����d
+  757   2          oled_printf_float(80, 5, chuhuan_d, 2, 3);
+  758   2      
+  759   2          if (nummm == 0)
+  760   2          {
+  761   3            oled_p6x8str(5, 0, "#");
+  762   3          }
+  763   2          if (P37 == 0)
+  764   2          {
+  765   3            delay_ms(20);
+  766   3            if (P37 == 0)
+  767   3            {
+  768   4              while (P37 == 0)
+  769   4                ;
+  770   4              nummm = nummm + 1;
+  771   4              if (nummm > 7)
+  772   4              {
+  773   5                nummm = 0;
+  774   5                oled_p6x8str(5, 7, " ");
+  775   5              }
+  776   4              nux = nummm - 1;
+  777   4              oled_p6x8str(5, nummm, "#");
+  778   4              oled_p6x8str(5, nux, " ");
+  779   4            }
+  780   3          }
+  781   2          if (P70 == 0)
+  782   2          {
+  783   3            delay_ms(30);
+C251 COMPILER V5.60.0,  Debug                                                              28/08/22  23:11:03  PAGE 13  
+
+  784   3            if (P70 == 0)
+  785   3            {
+  786   4              while (P70 == 0)
+  787   4                ;
+  788   4              switch (nummm)
+  789   4              {
+  790   5      
+  791   5              case 0:
+  792   5                ruhuan_p += 0.1;
+  793   5                break;
+  794   5              case 1:
+  795   5                ruhuan_d += 0.1;
+  796   5                break;
+  797   5              case 2:
+  798   5                huanz_p += 0.1;
+  799   5                break;
+  800   5              case 3:
+  801   5                huanz_d += 0.1;
+  802   5                break;
+  803   5              case 4:
+  804   5                chuhuan_p += 0.1;
+  805   5                break;
+  806   5              case 5:
+  807   5                chuhuan_d += 0.1;
+  808   5                break;
+  809   5              default:
+  810   5                break;
+  811   5              }
+  812   4            }
+  813   3          }
+  814   2      
+  815   2          if (P72 == 0)
+  816   2          {
+  817   3            delay_ms(30);
+  818   3            if (P72 == 0)
+  819   3            {
+  820   4              while (P72 == 0)
+  821   4                ;
+  822   4              switch (nummm)
+  823   4              {
+  824   5              case 0:
+  825   5                ruhuan_p -= 0.1;
+  826   5                break;
+  827   5              case 1:
+  828   5                ruhuan_d -= 0.1;
+  829   5                break;
+  830   5              case 2:
+  831   5                huanz_p -= 0.1;
+  832   5                break;
+  833   5              case 3:
+  834   5                huanz_d -= 0.1;
+  835   5                break;
+  836   5              case 4:
+  837   5                chuhuan_p -= 0.1;
+  838   5                break;
+  839   5              case 5:
+  840   5                chuhuan_d -= 0.1;
+  841   5                break;
+  842   5              default:
+  843   5                break;
+  844   5              }
+  845   4            }
+  846   3          }
+  847   2          if (P54 == 0)
+  848   2          {
+  849   3            delay_ms(20);
+C251 COMPILER V5.60.0,  Debug                                                              28/08/22  23:11:03  PAGE 14  
+
+  850   3            if (P54 == 0)
+  851   3            {
+  852   4              while (P54 == 0)
+  853   4                ;
+  854   4              oled_fill(0x00);
+  855   4              oled_p6x8str(10, 0, "speed_adjust");
+  856   4              oled_p6x8str(10, 1, "annulus");
+  857   4              break;
+  858   4            }
+  859   3          }
+  860   2        }
+  861   1      }
+  862          
+  863          void yuanshi_ADC()
+  864          {
+  865   1        while (1)
+  866   1        {
+  867   2          Read_ADC();
+  868   2          oled_int16(10, 0, ADDD_valu[0]);
+  869   2          oled_int16(10, 1, ADDD_valu[1]);
+  870   2          oled_int16(10, 2, ADDD_valu[2]);
+  871   2          oled_int16(10, 3, ADDD_valu[3]);
+  872   2          oled_int16(10, 4, ADDD_valu[4]);
+  873   2          oled_int16(10, 5, ADDD_valu[5]);
+  874   2          oled_int16(10, 6, ADDD_valu[6]);
+  875   2          oled_int16(10, 7, ADDD_valu[7]);
+  876   2          oled_int16(50, 0, ADDD_valu[8]);
+  877   2          oled_int16(50, 1, ADDD_valu[9]);
+  878   2          oled_int16(50, 2, ADDD_valu[10]);
+  879   2          oled_int16(50, 3, ADDD_valu[11]);
+  880   2          if (P54 == 0)
+  881   2          {
+  882   3            delay_ms(20);
+  883   3            if (P54 == 0)
+  884   3            {
+  885   4              while (P54 == 0)
+  886   4                ;
+  887   4              menu();
+  888   4              oled_fill(0x00);
+  889   4              break;
+  890   4            }
+  891   3          }
+  892   2        }
+  893   1      }
+  894          
+  895          void MOTRO_PID() //������ƺ��� ��ʾ�ٶ�
+  896          {
+  897   1        while (1)
+  898   1        {
+  899   2          oled_p6x8str(10, 1, "KP_L:");
+  900   2          oled_printf_float(80, 1, KP_L, 3, 3);
+  901   2          oled_p6x8str(10, 2, "KD_L:");
+  902   2          oled_printf_float(80, 2, KD_L, 3, 3);
+  903   2          oled_p6x8str(10, 3, "KI_L:");
+  904   2          oled_printf_float(80, 3, KI_L, 3, 3);
+  905   2          oled_p6x8str(10, 4, "KP_R:");
+  906   2          oled_printf_float(80, 4, KP_R, 3, 3);
+  907   2          oled_p6x8str(10, 5, "KD_R:");
+  908   2          oled_printf_float(80, 5, KD_R, 3, 3);
+  909   2          oled_p6x8str(10, 6, "KI_R:");
+  910   2          oled_printf_float(80, 6, KI_R, 3, 3);
+  911   2          if (num == 1)
+  912   2          {
+  913   3            oled_p6x8str(5, num, "#");
+  914   3          }
+  915   2      
+C251 COMPILER V5.60.0,  Debug                                                              28/08/22  23:11:03  PAGE 15  
+
+  916   2          if (P37 == 0)
+  917   2          {
+  918   3            delay_ms(20);
+  919   3            if (P37 == 0)
+  920   3            {
+  921   4              while (P37 == 0)
+  922   4                ;
+  923   4              num = num + 1;
+  924   4              if (num > 6)
+  925   4              {
+  926   5                num = 1;
+  927   5                oled_p6x8str(5, 6, " ");
+  928   5              }
+  929   4              nux = num - 1;
+  930   4              oled_p6x8str(5, num, "#");
+  931   4              oled_p6x8str(5, nux, " ");
+  932   4            }
+  933   3          }
+  934   2      
+  935   2          if (P70 == 0)
+  936   2          {
+  937   3            delay_ms(20);
+  938   3            if (P70 == 0)
+  939   3            {
+  940   4              while (P70 == 0)
+  941   4                ;
+  942   4              switch (num)
+  943   4              {
+  944   5              case 1:
+  945   5                KP_L += 0.5;
+  946   5                break;
+  947   5              case 2:
+  948   5                KD_L += 0.5;
+  949   5                break;
+  950   5              case 3:
+  951   5                KI_L += 0.5;
+  952   5                break;
+  953   5              case 4:
+  954   5                KP_R += 0.5;
+  955   5                break;
+  956   5              case 5:
+  957   5                KD_R += 0.5;
+  958   5                break;
+  959   5              case 6:
+  960   5                KI_R += 0.5;
+  961   5                break;
+  962   5              default:
+  963   5                break;
+  964   5              }
+  965   4            }
+  966   3          }
+  967   2          if (P72 == 0)
+  968   2          {
+  969   3            delay_ms(20);
+  970   3            if (P72 == 0)
+  971   3            {
+  972   4              while (P72 == 0)
+  973   4                ;
+  974   4              switch (num)
+  975   4              {
+  976   5              case 1:
+  977   5                KP_L -= 0.5;
+  978   5                break;
+  979   5              case 2:
+  980   5                KD_L -= 0.5;
+  981   5                break;
+C251 COMPILER V5.60.0,  Debug                                                              28/08/22  23:11:03  PAGE 16  
+
+  982   5              case 3:
+  983   5                KI_L -= 0.5;
+  984   5                break;
+  985   5              case 4:
+  986   5                KP_R -= 0.5;
+  987   5                break;
+  988   5              case 5:
+  989   5                KD_R -= 0.5;
+  990   5                break;
+  991   5              case 6:
+  992   5                KI_R -= 0.5;
+  993   5                break;
+  994   5              default:
+  995   5                break;
+  996   5              }
+  997   4            }
+  998   3          }
+  999   2          if (P54 == 0)
+ 1000   2          {
+ 1001   3            delay_ms(20);
+ 1002   3            if (P54 == 0)
+ 1003   3            {
+ 1004   4              while (P54 == 0)
+ 1005   4                ;
+ 1006   4              oled_fill(0x00);
+ 1007   4              menu();
+ 1008   4              break;
+ 1009   4            }
+ 1010   3          }
+ 1011   2        }
+ 1012   1      }
+ 1013          
+ 1014          //���ڻ���д���ֶ�pd
+ 1015          
+ 1016          void MOTRO_Ctro()
+ 1017          {
+ 1018   1        while (1)
+ 1019   1        {
+ 1020   2          oled_p6x8str(10, 1, "base:");
+ 1021   2          oled_int16(80, 1, base);
+ 1022   2      
+ 1023   2          if (numm == 1)
+ 1024   2          {
+ 1025   3            oled_p6x8str(5, numm, "#");
+ 1026   3          }
+ 1027   2      
+ 1028   2          if (P70 == 0)
+ 1029   2          {
+ 1030   3            delay_ms(20);
+ 1031   3            if (P70 == 0)
+ 1032   3            {
+ 1033   4              while (P70 == 0)
+ 1034   4                ;
+ 1035   4              switch (numm)
+ 1036   4              {
+ 1037   5              case 1:
+ 1038   5                base += 1;
+ 1039   5                break;
+ 1040   5              }
+ 1041   4            }
+ 1042   3          }
+ 1043   2          if (P72 == 0)
+ 1044   2          {
+ 1045   3            delay_ms(20);
+ 1046   3            if (P72 == 0)
+ 1047   3            {
+C251 COMPILER V5.60.0,  Debug                                                              28/08/22  23:11:03  PAGE 17  
+
+ 1048   4              while (P72 == 0)
+ 1049   4                ;
+ 1050   4              switch (numm)
+ 1051   4              {
+ 1052   5              case 1:
+ 1053   5                base -= 1;
+ 1054   5                break;
+ 1055   5              }
+ 1056   4            }
+ 1057   3          }
+ 1058   2      
+ 1059   2          if (P54 == 0)
+ 1060   2          {
+ 1061   3            delay_ms(20);
+ 1062   3            if (P54 == 0)
+ 1063   3            {
+ 1064   4              while (P54 == 0)
+ 1065   4                ;
+ 1066   4              oled_fill(0x00);
+ 1067   4              menu();
+ 1068   4              break;
+ 1069   4            }
+ 1070   3          }
+ 1071   2        }
+ 1072   1      }
+ 1073          
+ 1074          
+ 1075          void oled_menu() //�˵���������
+ 1076          {
+ 1077   1      
+ 1078   1        while (P44 == 0)
+ 1079   1        {
+ 1080   2          menu();
+ 1081   2          if (P37 == 0)
+ 1082   2          {
+ 1083   3            delay_ms(20);
+ 1084   3            if (P37 == 0)
+ 1085   3            {
+ 1086   4              while (P37 == 0)
+ 1087   4                ;
+ 1088   4              num = num + 1;
+ 1089   4              if (num > 7)
+ 1090   4              {
+ 1091   5                num = 0;
+ 1092   5                oled_p6x8str(5, 7, " ");
+ 1093   5              }
+ 1094   4              nux = num - 1;
+ 1095   4              oled_p6x8str(5, num, "#");
+ 1096   4              oled_p6x8str(5, nux, " ");
+ 1097   4            }
+ 1098   3          }
+ 1099   2      
+ 1100   2          if (P70 == 0)
+ 1101   2          {
+ 1102   3            delay_ms(20);
+ 1103   3            if (P70 == 0)
+ 1104   3            {
+ 1105   4              while (P70 == 0)
+ 1106   4                ;
+ 1107   4              oled_fill(0x00);
+ 1108   4              switch (num)
+ 1109   4              {
+ 1110   5              case 1:
+ 1111   5                ADC_SHOW();
+ 1112   5                break;
+ 1113   5              case 2:
+C251 COMPILER V5.60.0,  Debug                                                              28/08/22  23:11:03  PAGE 18  
+
+ 1114   5                xunjiflag();
+ 1115   5                break;
+ 1116   5              case 3:
+ 1117   5                MOTRO_PID();
+ 1118   5                break;
+ 1119   5              case 4:
+ 1120   5                MOTRO_Ctro();
+ 1121   5                break;
+ 1122   5              case 5:
+ 1123   5                DUOJI_Ctro(); // yuanshi_ADC()
+ 1124   5                break;
+ 1125   5              case 6:
+ 1126   5                yuanshi_ADC();
+ 1127   5                break;
+ 1128   5              default:
+ 1129   5                break;
+ 1130   5              }
+ 1131   4            }
+ 1132   3          }
+ 1133   2          while (P44 == 1)
+ 1134   2          {
+ 1135   3            oled_fill(0x00);
+ 1136   3            break;
+ 1137   3          }
+ 1138   2        } 
+ 1139   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =      5710     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =         4     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =       427     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

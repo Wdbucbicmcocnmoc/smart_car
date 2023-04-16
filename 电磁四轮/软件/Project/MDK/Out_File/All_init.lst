@@ -1,0 +1,85 @@
+C251 COMPILER V5.60.0,  All_init                                                           25/09/22  22:19:05  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE All_init
+OBJECT MODULE PLACED IN .\Out_File\All_init.obj
+COMPILER INVOKED BY: D:\Keil_v5\C251\BIN\C251.EXE All_init.c XSMALL INTR2 WARNINGLEVEL(3) BROWSE INCDIR(..\..\Libraries\
+                    -libraries;..\..\Libraries\seekfree_libraries;..\..\Libraries\seekfree_peripheral;..\CODE;..\USER\inc;..\USER\src) DEBUG 
+                    -PRINT(.\Out_File\All_init.lst) TABS(2) OBJECT(.\Out_File\All_init.obj) 
+
+stmt  level    source
+
+    1          #include "headfile.h"
+    2          #include "myfile.h"
+    3          
+    4          void all_init()
+    5          {
+    6   1          //电机初始化
+    7   1        pwm_init(PWM_1, 17000, 0);
+    8   1        pwm_init(PWM_2, 17000, 0); 
+    9   1        pwm_init(PWMA_CH1P_P60, 17000 , 0);
+   10   1        pwm_init(PWMA_CH3P_P64, 17000 , 0); 
+   11   1        //舵机初始化
+   12   1        pwm_init(S3010_CH, 50,700);    
+   13   1        /*ADC通道初始化*/
+   14   1      //底下FFC
+   15   1        adc_init(ADC_P00, ADC_SYSclk_DIV_2);  
+   16   1        adc_init(ADC_P01, ADC_SYSclk_DIV_2);  
+   17   1        adc_init(ADC_P02, ADC_SYSclk_DIV_2);  
+   18   1        adc_init(ADC_P06, ADC_SYSclk_DIV_2);    
+   19   1        adc_init(ADC_P10, ADC_SYSclk_DIV_2);  
+   20   1      
+   21   1      //上面FFC
+   22   1        adc_init(ADC_P03, ADC_SYSclk_DIV_2);  
+   23   1        //adc_init(ADC_P04, ADC_SYSclk_DIV_2);  
+   24   1        adc_init(ADC_P05, ADC_SYSclk_DIV_2);  
+   25   1        adc_init(ADC_P17, ADC_SYSclk_DIV_2);  
+   26   1        adc_init(ADC_P16, ADC_SYSclk_DIV_2);  
+   27   1        adc_init(ADC_P15, ADC_SYSclk_DIV_2);  
+   28   1        adc_init(ADC_P14, ADC_SYSclk_DIV_2);  
+   29   1        adc_init(ADC_P13, ADC_SYSclk_DIV_2);  
+   30   1        adc_init(ADC_P11, ADC_SYSclk_DIV_2);
+   31   1      
+   32   1        
+   33   1        //陀螺仪
+   34   1        icm20602_init_simiic();
+   35   1        simiic_init();
+   36   1      
+   37   1        
+   38   1        //oled初始化
+   39   1        oled_init();
+   40   1        //蜂鸣器
+   41   1        BEEP=0;
+   42   1        //编码器所用的定时器
+   43   1        ctimer_count_init(SPEEDL_PLUSE);  
+   44   1        ctimer_count_init(SPEEDR_PLUSE);  
+   45   1        //中断定时器
+   46   1        pit_timer_ms(TIM_1, 5);
+   47   1      
+   48   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       236     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+C251 COMPILER V5.60.0,  All_init                                                           25/09/22  22:19:05  PAGE 2   
+
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

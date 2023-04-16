@@ -1,0 +1,115 @@
+C251 COMPILER V5.60.0,  main                                                               25/09/22  22:19:04  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE main
+OBJECT MODULE PLACED IN .\Out_File\main.obj
+COMPILER INVOKED BY: D:\Keil_v5\C251\BIN\C251.EXE ..\USER\src\main.c XSMALL INTR2 WARNINGLEVEL(3) BROWSE INCDIR(..\..\Li
+                    -braries\libraries;..\..\Libraries\seekfree_libraries;..\..\Libraries\seekfree_peripheral;..\CODE;..\USER\inc;..\USER\src
+                    -) DEBUG PRINT(.\Out_File\main.lst) TABS(2) OBJECT(.\Out_File\main.obj) 
+
+stmt  level    source
+
+    1          /********************************************************************************************************
+             -*************
+    2           * COPYRIGHT NOTICE
+    3           * Copyright (c) 2020,逐飞科技
+    4           * All rights reserved.
+    5           * 技术讨论QQ群：一群：179029047(已满)  二群：244861897(已满)  三群：824575535
+    6           *
+    7           * 以下所有内容版权均属逐飞科技所有，未经允许不得用于商业用途，
+    8           * 欢迎各位使用并传播本程序，修改内容时必须保留逐飞科技的版权声明。
+    9           *
+   10           * @file          main
+   11           * @company       成都逐飞科技有限公司
+   12           * @author        逐飞科技(QQ790875685)
+   13           * @version       查看doc内version文件 版本说明
+   14           * @Software    MDK FOR C251 V5.60
+   15           * @Target core   STC16F40K128
+   16           * @Taobao      https://seekfree.taobao.com/
+   17           * @date          2020-12-18
+   18           ********************************************************************************************************
+             -************/
+   19          
+   20          #include "headfile.h"
+   21          #include "myfile.h"
+   22          /*
+   23           *关于内核频率的设定，可以查看board.h文件
+   24           *在board_init中,已经将P54引脚设置为复位
+   25           *如果需要使用P54引脚,可以在board.c文件中的board_init()函数中删除SET_P54_RESRT即可
+   26           */
+   27          
+   28          
+   29          
+   30          
+   31          void main()
+   32          {
+   33   1        DisableGlobalIRQ(); //关闭总中断
+   34   1      
+   35   1        // sys_clk可选值:30000000, 27000000. 24000000, 22118400, 20000000, 18432000, 12000000, 11059200, 6000
+             -000, 5529600。
+   36   1        //设置系统频率，此频率需要跟STC-ISP软件中的 <输入用户程序运行的IRC频率>选�
+             -�的频率一致。
+   37   1        //如果频率设置不对，将会导致串口的数据不正常,PWM的工作不正常等等。
+   38   1        sys_clk = 30000000; //设置系统频率为30MHz
+   39   1      
+   40   1        board_init(); //初始化寄存器
+   41   1        //此处编写用户代码(例如：外设初始化代码等)
+   42   1        all_init();
+   43   1        //总中断最后开启
+   44   1        //  bluetooth_ch9141_send_buff(test_str, 10);
+   45   1        EnableGlobalIRQ(); //开启总中断
+   46   1      
+   47   1        while (1)
+   48   1        {
+   49   2      
+   50   2          //此处编写需要循环执行的代码
+   51   2      
+   52   2          Out_storage();
+   53   2          Po_mode_switch();
+C251 COMPILER V5.60.0,  main                                                               25/09/22  22:19:04  PAGE 2   
+
+   54   2          if (out_ku == 0)
+   55   2          {
+   56   3            oled_menu();
+   57   3            // dianganzhi_show();
+   58   3          }
+   59   2          if (out_ku == 1)
+   60   2          {
+   61   3            Read_ADC();
+   62   3            S3010_Direation_Control();
+   63   3            oled_menu();
+   64   3            scene_show();
+   65   3          }
+   66   2          if (out_ku == 2)
+   67   2          {
+   68   3            In_ku();
+   69   3            oled_menu();
+   70   3            scene_show();
+   71   3          }
+   72   2      
+   73   2        }
+   74   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =        76     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

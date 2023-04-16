@@ -1,0 +1,260 @@
+C251 COMPILER V5.60.0,  zf_fifo                                                            25/09/22  22:19:00  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_fifo
+OBJECT MODULE PLACED IN .\Out_File\zf_fifo.obj
+COMPILER INVOKED BY: D:\Keil_v5\C251\BIN\C251.EXE ..\..\Libraries\seekfree_libraries\zf_fifo.c XSMALL INTR2 WARNINGLEVEL
+                    -(3) BROWSE INCDIR(..\..\Libraries\libraries;..\..\Libraries\seekfree_libraries;..\..\Libraries\seekfree_peripheral;..\CO
+                    -DE;..\USER\inc;..\USER\src) DEBUG PRINT(.\Out_File\zf_fifo.lst) TABS(2) OBJECT(.\Out_File\zf_fifo.obj) 
+
+stmt  level    source
+
+    1          /********************************************************************************************************
+             -*************
+    2           * COPYRIGHT NOTICE
+    3           * Copyright (c) 2020,逐飞科技
+    4           * All rights reserved.
+    5           * 技术讨论QQ群：一群：179029047(已满)  二群：244861897(已满)  三群：824575535
+    6           *
+    7           * 以下所有内容版权均属逐飞科技所有，未经允许不得用于商业用途，
+    8           * 欢迎各位使用并传播本程序，修改内容时必须保留逐飞科技的版权声明。
+    9           *
+   10           * @file          fifo
+   11           * @company       成都逐飞科技有限公司
+   12           * @author        逐飞科技(QQ790875685)
+   13           * @version       查看doc内version文件 版本说明
+   14           * @Software    MDK FOR C251 V5.60
+   15           * @Target core   STC32G12K128
+   16           * @Taobao      https://seekfree.taobao.com/
+   17           * @date          2020-4-14
+   18           ********************************************************************************************************
+             -************/
+   19          
+   20          
+   21          
+   22          #include "stdio.h"
+   23          #include "string.h"
+   24          #include "board.h"
+   25          #include "zf_gpio.h"
+   26          #include "zf_uart.h"
+   27          #include "zf_nvic.h"
+   28          #include "zf_delay.h"
+   29          #include "zf_fifo.h"
+   30          
+   31          
+   32          
+   33          
+   34          //-------------------------------------------------------------------------------------------------------
+             -------------
+   35          // @brief       FIFO 初始化 挂载对应缓冲区
+   36          // @param       *fifo           FIFO 对象指针
+   37          // @param       *buffer_addr    要挂载的缓冲区
+   38          // @param       size            缓冲区大小
+   39          // @return      fifo_state_enum 操作状态
+   40          // Sample usage:
+   41          //-------------------------------------------------------------------------------------------------------
+             -------------
+   42          fifo_state_enum fifo_init (fifo_struct *fifo, uint8 *buffer_addr, uint32 size)
+   43          {
+   44   1          if(buffer_addr == NULL)
+   45   1              return FIFO_BUFFER_NULL;
+   46   1          fifo->buffer    = buffer_addr;
+   47   1          fifo->head      = 0;
+   48   1          fifo->end       = 0;
+   49   1          fifo->size      = size;
+   50   1          fifo->max       = size;
+   51   1          return FIFO_SUCCESS;
+   52   1      }
+   53          
+C251 COMPILER V5.60.0,  zf_fifo                                                            25/09/22  22:19:00  PAGE 2   
+
+   54          //-------------------------------------------------------------------------------------------------------
+             -------------
+   55          // @brief       FIFO 头指针位移
+   56          // @param       *fifo           FIFO 对象指针
+   57          // @param       offset          偏移量
+   58          // @return      void
+   59          // Sample usage:
+   60          //-------------------------------------------------------------------------------------------------------
+             -------------
+   61          void fifo_head_offset (fifo_struct *fifo, uint32 offset)
+   62          {
+   63   1          fifo->head += offset;
+   64   1      
+   65   1          while(fifo->max <= fifo->head)                                              // 如果范围超过则减缓冲区
+             -大小 直到小于最大缓冲区大小
+   66   1          {
+   67   2              fifo->head -= fifo->max;
+   68   2          }
+   69   1      }
+   70          
+   71          //-------------------------------------------------------------------------------------------------------
+             -------------
+   72          // @brief       FIFO 尾指针位移
+   73          // @param       *fifo           FIFO 对象指针
+   74          // @param       offset          偏移量
+   75          // @return      void
+   76          // Sample usage:
+   77          //-------------------------------------------------------------------------------------------------------
+             -------------
+   78          void fifo_end_offset (fifo_struct *fifo, uint32 offset)
+   79          {
+   80   1          fifo->end += offset;
+   81   1      
+   82   1          while(fifo->max <= fifo->end)                                               // 如果范围超过则减缓冲区
+             -大小 直到小于最大缓冲区大小
+   83   1          {
+   84   2              fifo->end -= fifo->max;
+   85   2          }
+   86   1      }
+   87          
+   88          //-------------------------------------------------------------------------------------------------------
+             -------------
+   89          // @brief       FIFO 重置缓冲器
+   90          // @param       *fifo           FIFO 对象指针
+   91          // @return      void
+   92          // Sample usage:
+   93          //-------------------------------------------------------------------------------------------------------
+             -------------
+   94          void fifo_clear (fifo_struct *fifo)
+   95          {
+   96   1          fifo->head      = 0;
+   97   1          fifo->end       = 0;
+   98   1          fifo->size      = fifo->max;
+   99   1      }
+  100          
+  101          //-------------------------------------------------------------------------------------------------------
+             -------------
+  102          // @brief       FIFO 查询当前数据个数
+  103          // @param       *fifo           FIFO 对象指针
+  104          // @return      void
+  105          // Sample usage:
+  106          //-------------------------------------------------------------------------------------------------------
+             -------------
+  107          uint32 fifo_used (fifo_struct *fifo)
+  108          {
+  109   1          return (fifo->max - fifo->size);
+C251 COMPILER V5.60.0,  zf_fifo                                                            25/09/22  22:19:00  PAGE 3   
+
+  110   1      }
+  111          
+  112          //-------------------------------------------------------------------------------------------------------
+             -------------
+  113          // @brief       向 FIFO 中写入数据
+  114          // @param       *fifo           FIFO 对象指针
+  115          // @param       *dat            数据来源缓冲区指针
+  116          // @param       length          需要写入的数据长度
+  117          // @return      fifo_state_enum 操作状态
+  118          // Sample usage:                if(fifo_write_buffer(&fifo,data,32)!=FIFO_SUCCESS) while(1);
+  119          //-------------------------------------------------------------------------------------------------------
+             -------------
+  120          fifo_state_enum fifo_write_buffer (fifo_struct *fifo, uint8 *dat, uint32 length)
+  121          {
+  122   1          uint32 temp_length;
+  123   1      
+  124   1          if(length < fifo->size)                                                     // 剩余空间足够装下本次数
+             -据
+  125   1          {
+  126   2              temp_length = fifo->max - fifo->head;                                   // 计算头指针距离缓冲区尾
+             -还有多少空间
+  127   2      
+  128   2              if(length > temp_length)                                                // 距离缓冲区尾长度不足写
+             -入数据 环形缓冲区分段操作
+  129   2              {
+  130   3                  memcpy(&fifo->buffer[fifo->head], dat, (uint16)temp_length);                // 拷贝第一段数据
+  131   3                  fifo_head_offset(fifo, temp_length);                                // 头指针偏移
+  132   3                  dat += temp_length;                                                 // 读取缓冲偏移
+  133   3                  memcpy(&fifo->buffer[fifo->head], dat, length - temp_length);       // 拷贝第一段数据
+  134   3                  fifo_head_offset(fifo, length - temp_length);                       // 头指针偏移
+  135   3              }
+  136   2              else
+  137   2              {
+  138   3                  memcpy(&fifo->buffer[fifo->head], dat, (uint16)length);                     // 一次完整写入
+  139   3                  fifo_head_offset(fifo, length);                                     // 头指针偏移
+  140   3              }
+  141   2      
+  142   2              fifo->size -= length;                                                   // 缓冲区剩余长度减小
+  143   2          }
+  144   1          else
+  145   1          {
+  146   2              return FIFO_SPACE_NO_ENOUGH;
+  147   2          }
+  148   1      
+  149   1          return FIFO_SUCCESS;
+  150   1      }
+  151          
+  152          //-------------------------------------------------------------------------------------------------------
+             -------------
+  153          // @brief       从 FIFO 读取数据
+  154          // @param       *fifo           FIFO 对象指针
+  155          // @param       *dat            目标缓冲区指针
+  156          // @param       *length         读取的数据长度 如果没有这么多数据这里会被修改
+  157          // @param       flag            是否变更 FIFO 状态 可选择是否清空读取的数据
+  158          // @return      fifo_state_enum 操作状态
+  159          // Sample usage:                if(fifo_read_buffer(&fifo,data,32,FIFO_READ_ONLY)!=FIFO_SUCCESS) while(1)
+             -;
+  160          //-------------------------------------------------------------------------------------------------------
+             -------------
+  161          fifo_state_enum fifo_read_buffer (fifo_struct *fifo, uint8 *dat, uint32 *length, fifo_operation_enum flag
+             -)
+  162          {
+  163   1          uint8 data_check = 0;
+  164   1          uint32 temp_length;
+  165   1      
+  166   1          if(*length > fifo_used(fifo))
+C251 COMPILER V5.60.0,  zf_fifo                                                            25/09/22  22:19:00  PAGE 4   
+
+  167   1          {
+  168   2              *length = (fifo->max - fifo->size);                                     // 纠正读取的长度
+  169   2              data_check = 1;                                                         // 标志数据不够
+  170   2          }
+  171   1      
+  172   1          temp_length = fifo->max - fifo->end;                                        // 计算尾指针距离缓冲区尾
+             -还有多少空间
+  173   1          if(*length <= temp_length)                                                  // 足够一次性读取完毕
+  174   1          {
+  175   2              if(NULL != dat)    memcpy(dat, &fifo->buffer[fifo->end], (uint16)*length);      // 一次性读取完毕
+  176   2          }
+  177   1          else
+  178   1          {
+  179   2              if(NULL != dat)
+  180   2              {
+  181   3                  memcpy(dat, &fifo->buffer[fifo->end], (uint16)temp_length);                 // 拷贝第一段数据
+  182   3                  memcpy(&dat[temp_length], &fifo->buffer[0], *length - temp_length); // 拷贝第二段数据
+  183   3              }
+  184   2          }
+  185   1      
+  186   1          if(flag == FIFO_READ_AND_CLEAN)                                             // 如果选择读取并更改 FIF
+             -O 状态
+  187   1          {
+  188   2              fifo_end_offset(fifo, *length);                                         // 移动 FIFO 头指针
+  189   2              fifo->size += *length;
+  190   2          }
+  191   1      
+  192   1          return (data_check?FIFO_DATA_NO_ENOUGH:FIFO_SUCCESS);
+  193   1      }
+  194          
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       760     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------         31
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,297 @@
+C251 COMPILER V5.60.0,  board                                                              25/09/22  22:18:56  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE board
+OBJECT MODULE PLACED IN .\Out_File\board.obj
+COMPILER INVOKED BY: D:\Keil_v5\C251\BIN\C251.EXE ..\..\Libraries\libraries\board.c XSMALL INTR2 WARNINGLEVEL(3) BROWSE 
+                    -INCDIR(..\..\Libraries\libraries;..\..\Libraries\seekfree_libraries;..\..\Libraries\seekfree_peripheral;..\CODE;..\USER\
+                    -inc;..\USER\src) DEBUG PRINT(.\Out_File\board.lst) TABS(2) OBJECT(.\Out_File\board.obj) 
+
+stmt  level    source
+
+    1          /********************************************************************************************************
+             -*************
+    2           * COPYRIGHT NOTICE
+    3           * Copyright (c) 2020,逐飞科技
+    4           * All rights reserved.
+    5           * 技术讨论QQ群：一群：179029047(已满)  二群：244861897(已满)  三群：824575535
+    6           *
+    7           * 以下所有内容版权均属逐飞科技所有，未经允许不得用于商业用途，
+    8           * 欢迎各位使用并传播本程序，修改内容时必须保留逐飞科技的版权声明。
+    9           *
+   10           * @file          board
+   11           * @company       成都逐飞科技有限公司
+   12           * @author        逐飞科技(QQ790875685)
+   13           * @version       查看doc内version文件 版本说明
+   14           * @Software    MDK FOR C251 V5.60
+   15           * @Target core   STC16F40K128
+   16           * @Taobao      https://seekfree.taobao.com/
+   17           * @date          2020-4-14
+   18           ********************************************************************************************************
+             -************/
+   19          
+   20          #include "board.h"
+   21          #include "zf_uart.h"
+   22          #include "zf_tim.h"
+   23          #include "zf_delay.h"
+   24          
+   25          // 22.11MHz的IRC参数寄存器 0xFB
+   26          // 24MHz的IRC参数寄存器 0xFB
+   27          #define IRC_22M (*((uint8 idata *)0xFA))
+   28          #define IRC_24M (*((uint8 idata *)0xFB))
+   29          
+   30          //内核频率
+   31          int32 sys_clk = 0;
+   32          
+   33          // void set_clk(uint32 clk)
+   34          //{
+   35          //  if(33177600 == clk)
+   36          //  {
+   37          //    IRCBAND = 1;
+   38          //    LIRTRIM = 3;
+   39          //    IRTRIM = 38;
+   40          //    CLKDIV = 0;
+   41          //  }
+   42          //  else if(30000000 == clk)
+   43          //  {
+   44          //    IRCBAND = 0;
+   45          //    LIRTRIM = 3;
+   46          //    IRTRIM = 227;
+   47          //    CLKDIV = 0;
+   48          //  }
+   49          //  else if(27000000 == clk)
+   50          //  {
+   51          //    IRCBAND = 0;
+   52          //    LIRTRIM = 3;
+   53          //    IRTRIM = 171;
+   54          //    CLKDIV = 0;
+   55          //  }
+C251 COMPILER V5.60.0,  board                                                              25/09/22  22:18:56  PAGE 2   
+
+   56          //  else if(24000000 == clk)
+   57          //  {
+   58          //    IRCBAND = 0;
+   59          //    LIRTRIM = 1;
+   60          //    IRTRIM = 115;
+   61          //    CLKDIV = 0;
+   62          //  }
+   63          //  else if(22118400 == clk)
+   64          //  {
+   65          //    IRCBAND = 0;
+   66          //    LIRTRIM = 3;
+   67          //    IRTRIM = 80;
+   68          //    CLKDIV = 0;
+   69          //  }
+   70          //  else if(20000000 == clk)
+   71          //  {
+   72          //    IRCBAND = 0;
+   73          //    LIRTRIM = 1;
+   74          //    IRTRIM = 40;
+   75          //    CLKDIV = 0;
+   76          //  }
+   77          //  else if(18432000 == clk)
+   78          //  {
+   79          //    IRCBAND = 0;
+   80          //    LIRTRIM = 1;
+   81          //    IRTRIM = 12;
+   82          //    CLKDIV = 0;
+   83          //  }
+   84          //  else if(12000000 == clk)
+   85          //  {
+   86          //    IRCBAND = 0;
+   87          //    LIRTRIM = 1;
+   88          //    IRTRIM = 115;
+   89          //    CLKDIV = 1;
+   90          //  }
+   91          //  else if(11059200 == clk)
+   92          //  {
+   93          //    IRCBAND = 0;
+   94          //    LIRTRIM = 3;
+   95          //    IRTRIM = 80;
+   96          //    CLKDIV = 1;
+   97          //  }
+   98          //  else if(6000000 == clk)
+   99          //  {
+  100          //    IRCBAND = 0;
+  101          //    LIRTRIM = 1;
+  102          //    IRTRIM = 115;
+  103          //    CLKDIV = 3;
+  104          //  }
+  105          //  else if(5529600 == clk)
+  106          //  {
+  107          //    IRCBAND = 0;
+  108          //    LIRTRIM = 3;
+  109          //    IRTRIM = 80;
+  110          //    CLKDIV = 3;
+  111          //  }
+  112          //  else  //错误参数 调整到  30M
+  113          //  {
+  114          //    IRCBAND = 0;
+  115          //    LIRTRIM = 3;
+  116          //    IRTRIM = 227;
+  117          //    CLKDIV = 0;
+  118          //  }
+  119          // }
+  120          
+  121          //-------------------------------------------------------------------------------------------------------
+C251 COMPILER V5.60.0,  board                                                              25/09/22  22:18:56  PAGE 3   
+
+             -------------
+  122          //  @brief      获取系统频率
+  123          //  @param      NULL            空值
+  124          //  @return     void          系统频率
+  125          //  Sample usage:
+  126          //-------------------------------------------------------------------------------------------------------
+             -------------
+  127          // uint32 get_clk(void)
+  128          //{
+  129          //  uint32 temp_count;
+  130          //  P_SW2 |= 0x80;
+  131          //
+  132          //  if(IRCBAND)
+  133          //    temp_count = 36000000UL + ((int32)((int32)IRTRIM - (int32)IRC_22M) * 0x128E0UL); //频率的偏差,�
+             -�算出大概数据
+  134          //  else
+  135          //    temp_count = 24000000UL + ((int32)((int32)IRTRIM - (int32)IRC_24M) * 0xBB80UL);  //频率的偏差,�
+             -�算出大概数据
+  136          //
+  137          //    temp_count /= CLKDIV;                                     //频率太低需要分频
+  138          //
+  139          //  if  (temp_count < 5764800UL)
+  140          //    return 5529600UL;
+  141          //  else if(temp_count < 8529600UL)
+  142          //    return 6000000UL;
+  143          //  else if(temp_count < 11529600UL)
+  144          //    return 11059200UL;
+  145          //  else if(temp_count < 15216000UL)
+  146          //    return  12000000UL;
+  147          //  else if(temp_count < 19216000UL)
+  148          //    return  18432000UL;
+  149          //  else if(temp_count < 21059200UL)
+  150          //    return  20000000UL;
+  151          //  else if(temp_count < 23059200UL)
+  152          //    return  22118400UL;
+  153          //  else if(temp_count < 25500000UL)
+  154          //    return  24000000UL;
+  155          //  else if(temp_count < 28500000UL)
+  156          //    return  27000000UL;
+  157          //  else if(temp_count < 31500000UL)
+  158          //    return  30000000UL;
+  159          //  else if(temp_count < 33500000UL)
+  160          //    return  33177600UL;
+  161          //  else if(temp_count < 35932000UL)
+  162          //    return  35000000UL;
+  163          //  else if(temp_count < 38432000UL)
+  164          //    return  36864000UL;
+  165          //  else if(temp_count < 42000000UL)
+  166          //    return  40000000UL;
+  167          //  else if(temp_count < 46000000UL)
+  168          //    return  44236800UL;
+  169          //  else
+  170          //    return 48000000UL;
+  171          //}
+  172          
+  173          void board_init(void)
+  174          {
+  175   1      
+  176   1        //  //获取系统频率
+  177   1        //#if (0 != FOSC)
+  178   1        //  sys_clk = FOSC;
+  179   1        //  set_clk(sys_clk);
+  180   1        //#endif
+  181   1      
+  182   1      
+  183   1      #if (1 == EXTERNAL_CRYSTA_ENABLE)
+C251 COMPILER V5.60.0,  board                                                              25/09/22  22:18:56  PAGE 4   
+
+                 P_SW2 = 0x80;
+                 XOSCCR = 0xc0; //启动外部晶振
+                 while (!(XOSCCR & 1))
+                   ;      //等待时钟稳定
+                 CLKDIV = 0x00; //时钟不分频
+                 CKSEL = 0x01;  //选择外部晶振
+                 P_SW2 = 0x00;
+               #endif
+  192   1      
+  193   1        delay_init(); //延时函数初始化
+  194   1      
+  195   1        WTST = 0;
+  196   1        P_SW2 |= 0x80;
+  197   1        CLKDIV = 0; // 24MHz主频，分频设置
+  198   1      
+  199   1        P0M0 = 0x00;
+  200   1        P0M1 = 0x00;
+  201   1        P1M0 = 0x00;
+  202   1        P1M1 = 0x00;
+  203   1        P2M0 = 0x00;
+  204   1        P2M1 = 0x00;
+  205   1        P3M0 = 0x00;
+  206   1        P3M1 = 0x00;
+  207   1        P4M0 = 0x00;
+  208   1        P4M1 = 0x00;
+  209   1        P5M0 = 0x00;
+  210   1        P5M1 = 0x00;
+  211   1        P6M0 = 0x00;
+  212   1        P6M1 = 0x00;
+  213   1        P7M0 = 0x00;
+  214   1        P7M1 = 0x00;
+  215   1      
+  216   1        ADCCFG = 0;
+  217   1        AUXR = 0;
+  218   1        SCON = 0;
+  219   1        S2CON = 0;
+  220   1        S3CON = 0;
+  221   1        S4CON = 0;
+  222   1        P_SW1 = 0;
+  223   1        P_SW2 = 0;
+  224   1        IE2 = 0;
+  225   1        TMOD = 0;
+  226   1      
+  227   1        uart_init(DEBUG_UART, DEBUG_UART_RX_PIN, DEBUG_UART_TX_PIN, DEBUG_UART_BAUD, DEBUG_UART_TIM);
+  228   1      }
+  229          
+  230          #if (1 == PRINTF_ENABLE) //初始化调试串口
+  231          //重定义printf 数字 只能输出uint16
+  232          char putchar(char c)
+  233          {
+  234   1        uart_putchar(UART_1, c); //把自己实现的串口打印一字节数据的函数替换到这里
+  235   1      
+  236   1        return c;
+  237   1      }
+  238          #endif
+  239          
+  240          void DisableGlobalIRQ(void)
+  241          {
+  242   1        EA = 0;
+  243   1      }
+  244          
+  245          void EnableGlobalIRQ(void)
+  246          {
+  247   1        EA = 1;
+  248   1      }
+
+C251 COMPILER V5.60.0,  board                                                              25/09/22  22:18:56  PAGE 5   
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       146     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =         4     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =         8     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

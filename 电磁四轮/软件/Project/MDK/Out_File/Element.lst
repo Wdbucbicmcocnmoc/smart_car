@@ -1,0 +1,80 @@
+C251 COMPILER V5.60.0,  Element                                                            28/08/22  23:11:03  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE Element
+OBJECT MODULE PLACED IN .\Out_File\Element.obj
+COMPILER INVOKED BY: D:\keil5\C251\BIN\C251.EXE Element.c XSMALL INTR2 WARNINGLEVEL(3) BROWSE INCDIR(..\..\Libraries\lib
+                    -raries;..\..\Libraries\seekfree_libraries;..\..\Libraries\seekfree_peripheral;..\CODE;..\USER\inc;..\USER\src) DEBUG PRI
+                    -NT(.\Out_File\Element.lst) TABS(2) OBJECT(.\Out_File\Element.obj) 
+
+stmt  level    source
+
+    1          #include "headfile.h"
+    2          #include "myfile.h"
+    3          
+    4          extern uint8 out_ku;
+    5          
+    6          int8 element_model = 0, element_sum = 0;
+    7          int order[] = {3};
+    8          int templet[] = {3};
+    9          int Tab_straight = 11, Tab_BIsland_Left = 801, Tab_BIsland_Right = 802, Tab_Fork = 3, Tab_ramp = 20;
+   10          int Tab_SIsland_Left = 501,Tab_SIsland_Right = 502;
+   11          void Element_key()    //模板匹配
+   12          {
+   13   1          int t;
+   14   1          if (P63 == 0)
+   15   1              element_model = 1;
+   16   1          else
+   17   1              element_model = 0;
+   18   1          if (out_ku == 1)
+   19   1          {
+   20   2              if (element_model == 0)
+   21   2              {
+   22   3                  element_sum = sizeof(order) / sizeof(order[0]);
+   23   3                  for (t = element_sum - 1; t >= 0; t--)
+   24   3                  {
+   25   4                      order[t] = 0;
+   26   4                  }
+   27   3                  Tab_Fork = 0, Tab_BIsland_Left = 0, Tab_BIsland_Right = 0, Tab_SIsland_Left = 0, Tab_SIsland_
+             -Right = 0;
+   28   3                  element_model = 2;
+   29   3              }
+   30   2              else if (element_model == 1)
+   31   2              {
+   32   3                  Tab_Fork = 3, Tab_BIsland_Left = 801, Tab_BIsland_Right = 802,Tab_SIsland_Left = 501, Tab_SIs
+             -land_Right = 502;
+   33   3                  element_sum = sizeof(order) / sizeof(order[0]);
+   34   3                  for (t = 0; t < element_sum; t++)
+   35   3                  {
+   36   4                      order[t] = templet[t];
+   37   4                  }
+   38   3                  element_model = 2;
+   39   3              }
+   40   2          }
+   41   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       169     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =        20     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+C251 COMPILER V5.60.0,  Element                                                            28/08/22  23:11:03  PAGE 2   
+
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =        64     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

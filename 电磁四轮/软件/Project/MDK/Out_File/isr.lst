@@ -1,0 +1,263 @@
+C251 COMPILER V5.60.0,  isr                                                                25/09/22  22:19:03  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE isr
+OBJECT MODULE PLACED IN .\Out_File\isr.obj
+COMPILER INVOKED BY: D:\Keil_v5\C251\BIN\C251.EXE ..\USER\src\isr.c XSMALL INTR2 WARNINGLEVEL(3) BROWSE INCDIR(..\..\Lib
+                    -raries\libraries;..\..\Libraries\seekfree_libraries;..\..\Libraries\seekfree_peripheral;..\CODE;..\USER\inc;..\USER\src)
+                    - DEBUG PRINT(.\Out_File\isr.lst) TABS(2) OBJECT(.\Out_File\isr.obj) 
+
+stmt  level    source
+
+    1          ///******************************************************************************************************
+             -***************
+    2          // * COPYRIGHT NOTICE
+    3          // * Copyright (c) 2020,��ɿƼ�
+    4          // * All rights reserved.
+    5          // * ��������QQȺ��һȺ��179029047(����)  ��Ⱥ��244861897(���
+             -���)  ��Ⱥ��824575535
+    6          // *
+    7          // * �����������ݰ�Ȩ������ɿƼ����У�δ�������
+             -�����������ҵ��;��
+    8          // * ��ӭ��λʹ�ò������������޸�����ʱ���뱣����
+             -��ɿƼ��İ�Ȩ������
+    9          // *
+   10          // * @file          isr
+   11          // * @company       �ɶ���ɿƼ����޹�˾
+   12          // * @author        ��ɿƼ�(QQ790875685)
+   13          // * @version       �鿴doc��version�ļ� �汾˵��
+   14          // * @Software      MDK FOR C251 V5.60
+   15          // * @Target core   STC16F40K128
+   16          // * @Taobao        https://seekfree.taobao.com/
+   17          // * @date          2020-4-14
+   18          // ******************************************************************************************************
+             -**************/
+   19          #include "headfile.h"
+   20          #include "myfile.h"
+   21          
+   22          int chuku_time = 0;
+   23          // UART1�ж�
+   24          void UART1_Isr() interrupt 4
+   25          {
+   26   1          uint8 res;
+   27   1          static uint8 dwon_count;
+   28   1          if (UART1_GET_TX_FLAG)
+   29   1          {
+   30   2              UART1_CLEAR_TX_FLAG;
+   31   2              busy[1] = 0;
+   32   2          }
+   33   1          if (UART1_GET_RX_FLAG)
+   34   1          {
+   35   2              UART1_CLEAR_RX_FLAG;
+   36   2              res = SBUF;
+   37   2              //�����Զ�����
+   38   2              if (res == 0x7F)
+   39   2              {
+   40   3                  if (dwon_count++ > 20)
+   41   3                      IAP_CONTR = 0x60;
+   42   3              }
+   43   2              else
+   44   2              {
+   45   3                  dwon_count = 0;
+   46   3              }
+   47   2          }
+   48   1      }
+   49          
+   50          // UART2�ж�
+   51          void UART2_Isr() interrupt 8
+   52          {
+C251 COMPILER V5.60.0,  isr                                                                25/09/22  22:19:03  PAGE 2   
+
+   53   1          if (UART2_GET_TX_FLAG)
+   54   1          {
+   55   2              UART2_CLEAR_TX_FLAG;
+   56   2              busy[2] = 0;
+   57   2          }
+   58   1          if (UART2_GET_RX_FLAG)
+   59   1          {
+   60   2              UART2_CLEAR_RX_FLAG;
+   61   2              //�������ݼĴ���Ϊ��S2BUF
+   62   2          }
+   63   1      }
+   64          
+   65          // UART3�ж�
+   66          void UART3_Isr() interrupt 17
+   67          {
+   68   1          if (UART3_GET_TX_FLAG)
+   69   1          {
+   70   2              UART3_CLEAR_TX_FLAG;
+   71   2              busy[3] = 0;
+   72   2          }
+   73   1          if (UART3_GET_RX_FLAG)
+   74   1          {
+   75   2              UART3_CLEAR_RX_FLAG;
+   76   2              //�������ݼĴ���Ϊ��S3BUF
+   77   2          }
+   78   1      }
+   79          
+   80          // UART4�ж�
+   81          void UART4_Isr() interrupt 18
+   82          {
+   83   1          if (UART4_GET_TX_FLAG)
+   84   1          {
+   85   2              UART4_CLEAR_TX_FLAG;
+   86   2              busy[4] = 0;
+   87   2          }
+   88   1          if (UART4_GET_RX_FLAG)
+   89   1          {
+   90   2              UART4_CLEAR_RX_FLAG;
+   91   2      
+   92   2              //�������ݼĴ���Ϊ��S4BUF;
+   93   2              if (wireless_type == WIRELESS_SI24R1)
+   94   2              {
+   95   3                  wireless_uart_callback(); //����ת���ڻص�����
+   96   3              }
+   97   2              else if (wireless_type == WIRELESS_CH9141)
+   98   2              {
+   99   3                  bluetooth_ch9141_uart_callback(); //����ת���ڻص�����
+  100   3              }
+  101   2              else if (wireless_type == WIRELESS_CH573)
+  102   2              {
+  103   3                  wireless_ch573_callback(); // CH573����ģ��ص�����
+  104   3              }
+  105   2          }
+  106   1      }
+  107          
+  108          #define LED P52
+  109          void INT0_Isr() interrupt 0
+  110          {
+  111   1          LED = 0; //����LED
+  112   1      }
+  113          void INT1_Isr() interrupt 2
+  114          {
+  115   1      }
+  116          void INT2_Isr() interrupt 10
+  117          {
+  118   1          INT2_CLEAR_FLAG; //����жϱ�־
+C251 COMPILER V5.60.0,  isr                                                                25/09/22  22:19:03  PAGE 3   
+
+  119   1      }
+  120          void INT3_Isr() interrupt 11
+  121          {
+  122   1          INT3_CLEAR_FLAG; //����жϱ�־
+  123   1      }
+  124          
+  125          void INT4_Isr() interrupt 16
+  126          {
+  127   1          INT4_CLEAR_FLAG; //����жϱ�־
+  128   1      }
+  129          
+  130          void TM0_Isr() interrupt 1
+  131          {
+  132   1      }
+  133          void TM1_Isr() interrupt 3
+  134          {
+  135   1          encode();
+  136   1          motor_pid();
+  137   1          motor_control();
+  138   1          icm_open();
+  139   1          //    Angle_Cal();
+  140   1          huoer();
+  141   1          if (gyroscope_time < 1000)
+  142   1          {
+  143   2              gyroscope_time++;
+  144   2          }
+  145   1      
+  146   1          if (chuku_time < 600 && flag_0 == 1)
+  147   1          {
+  148   2              chuku_time++;
+  149   2          }
+  150   1      
+  151   1          if (ramp_time >= 0 && Ramp == 1)
+  152   1          {
+  153   2              ramp_time++;
+  154   2              if (ramp_time >= 2000)
+  155   2                  ramp_time = 0;
+  156   2          }
+  157   1          else
+  158   1              ramp_time = 0;
+  159   1      
+  160   1          if ((three_on == 1 || three_in_L == 1 || three_in_R == 1) && fork_time >= 0)
+  161   1          {
+  162   2              fork_time++;
+  163   2              if (fork_time < 400)
+  164   2                  fork_time = 0;
+  165   2          }
+  166   1          else
+  167   1              fork_time = 0;
+  168   1      
+  169   1          if (Island_time >= 0 && (Island_Left == 5 || Island_Right == 5))
+  170   1          {
+  171   2              Island_time++;
+  172   2              if (Island_time > 600)
+  173   2              {
+  174   3                  Island_time = 0;
+  175   3              }
+  176   2          }
+  177   1          else
+  178   1              Island_time = 0;
+  179   1      }
+  180          void TM2_Isr() interrupt 12
+  181          {
+  182   1          TIM2_CLEAR_FLAG; //����жϱ�־
+  183   1      }
+  184          void TM3_Isr() interrupt 19
+C251 COMPILER V5.60.0,  isr                                                                25/09/22  22:19:03  PAGE 4   
+
+  185          {
+  186   1          TIM3_CLEAR_FLAG; //����жϱ�־
+  187   1      }
+  188          
+  189          void TM4_Isr() interrupt 20
+  190          {
+  191   1          TIM4_CLEAR_FLAG; //����жϱ�־
+  192   1          //  ccd_collect();   //CCD�ɼ�����
+  193   1      }
+  194          
+  195          // void  INT0_Isr()  interrupt 0;
+  196          // void  TM0_Isr()   interrupt 1;
+  197          // void  INT1_Isr()  interrupt 2;
+  198          // void  TM1_Isr()   interrupt 3;
+  199          // void  UART1_Isr() interrupt 4;
+  200          // void  ADC_Isr()   interrupt 5;
+  201          // void  LVD_Isr()   interrupt 6;
+  202          // void  PCA_Isr()   interrupt 7;
+  203          // void  UART2_Isr() interrupt 8;
+  204          // void  SPI_Isr()   interrupt 9;
+  205          // void  INT2_Isr()  interrupt 10;
+  206          // void  INT3_Isr()  interrupt 11;
+  207          // void  TM2_Isr()   interrupt 12;
+  208          // void  INT4_Isr()  interrupt 16;
+  209          // void  UART3_Isr() interrupt 17;
+  210          // void  UART4_Isr() interrupt 18;
+  211          // void  TM3_Isr()   interrupt 19;
+  212          // void  TM4_Isr()   interrupt 20;
+  213          // void  CMP_Isr()   interrupt 21;
+  214          // void  I2C_Isr()   interrupt 24;
+  215          // void  USB_Isr()   interrupt 25;
+  216          // void  PWM1_Isr()  interrupt 26;
+  217          // void  PWM2_Isr()  interrupt 27;
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       565     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =         3     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =         6     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

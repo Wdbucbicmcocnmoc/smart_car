@@ -1,0 +1,443 @@
+C251 COMPILER V5.60.0,  SEEKFREE_PRINTF                                                    25/09/22  22:18:57  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE SEEKFREE_PRINTF
+OBJECT MODULE PLACED IN .\Out_File\SEEKFREE_PRINTF.obj
+COMPILER INVOKED BY: D:\Keil_v5\C251\BIN\C251.EXE ..\..\Libraries\libraries\SEEKFREE_PRINTF.c XSMALL INTR2 WARNINGLEVEL(
+                    -3) BROWSE INCDIR(..\..\Libraries\libraries;..\..\Libraries\seekfree_libraries;..\..\Libraries\seekfree_peripheral;..\COD
+                    -E;..\USER\inc;..\USER\src) DEBUG PRINT(.\Out_File\SEEKFREE_PRINTF.lst) TABS(2) OBJECT(.\Out_File\SEEKFREE_PRINTF.obj) 
+
+stmt  level    source
+
+    1          /********************************************************************************************************
+             -*************
+    2           * COPYRIGHT NOTICE
+    3           * Copyright (c) 2018,Öð·É¿Æ¼¼
+    4           * All rights reserved.
+    5           * æŠ€æœ¯è®¨è®ºQQç¾¤ï¼šä¸€ç¾¤ï¼š179029047(å·²æ»¡)  äºŒç¾¤ï¼š244861897 ÒÔÏÂËùÓÐÄÚÈÝ°æÈ¨¾ùÊôÖð·É¿Æ¼¼ËùÓÐ£¬Î
+             -´¾­ÔÊÐí²»µÃÓÃÓÚÉÌÒµÓÃÍ¾£¬
+    6           * »¶Ó­¸÷Î»Ê¹ÓÃ²¢´«²¥±¾³ÌÐò£¬ÐÞ¸ÄÄÚÈÝÊ±±ØÐë±£ÁôÖð·É¿Æ¼¼µÄ°æÈ¨ÉùÃ÷¡£
+    7           *
+    8           * @file          printf
+    9           * @company       ³É¶¼Öð·É¿Æ¼¼ÓÐÏÞ¹«Ë¾
+   10           * @author        Öð·É¿Æ¼¼(QQ3184284598)
+   11           * @version       ²é¿´docÄÚversionÎÄ¼þ °æ±¾ËµÃ÷
+   12           * @Software    MDK FOR C251 V5.60
+   13           * @Target core   NXP RT1064DVL6A
+   14           * @Taobao      https://seekfree.taobao.com/
+   15           * @date          2019-04-30
+   16           ********************************************************************************************************
+             -************/
+   17          
+   18          
+   19          #include <stdarg.h>
+   20          #include <string.h>
+   21          
+   22          #include "SEEKFREE_PRINTF.h"
+   23          
+   24          
+   25          uint8 number_conversion_ascii(uint32 dat, int8 *p, uint8 neg_type, uint8 radix)
+   26          {
+   27   1          int32   neg_dat;
+   28   1          uint32  pos_dat;
+   29   1          uint8   temp_data = 0;
+   30   1          uint8   valid_num = 0;
+   31   1          
+   32   1          if(neg_type)
+   33   1          {
+   34   2              neg_dat = (int32)dat;
+   35   2              if(neg_dat<0)   neg_dat = -neg_dat;
+   36   2              while(1)
+   37   2              {
+   38   3                  *p = neg_dat%radix + '0';
+   39   3                  neg_dat = neg_dat/radix;
+   40   3                  valid_num++;
+   41   3                  
+   42   3                  if(!neg_dat) break;
+   43   3                  p++;
+   44   3              }
+   45   2          }
+   46   1          else
+   47   1          {
+   48   2              pos_dat = dat;
+   49   2              while(1)
+   50   2              {
+   51   3                  temp_data = pos_dat%radix;
+   52   3                  if(10 <= temp_data) temp_data += 'A'-10;
+   53   3                  else                temp_data += '0';
+   54   3                  
+C251 COMPILER V5.60.0,  SEEKFREE_PRINTF                                                    25/09/22  22:18:57  PAGE 2   
+
+   55   3                  *p = temp_data;
+   56   3                  
+   57   3                  pos_dat = pos_dat/radix;
+   58   3                  valid_num++;
+   59   3                  
+   60   3                  if(!pos_dat) break;
+   61   3                  p++;
+   62   3              }
+   63   2          }
+   64   1          return valid_num;
+   65   1      }
+   66          
+   67          void printf_reverse_order(int8 *d_buff, uint32 len)
+   68          {
+   69   1          uint32 i;
+   70   1          int8  temp_data;
+   71   1          for(i=0;i<len/2;i++)
+   72   1          {
+   73   2              temp_data = d_buff[len-1-i];
+   74   2              d_buff[len-1-i] = d_buff[i];
+   75   2              d_buff[i] = temp_data; 
+   76   2          }
+   77   1      }
+   78          
+   79          
+   80          //void printf(const int8 *format, ...)
+   81          //{
+   82          //#if(PRINTF)     //Èç¹ûºê¶¨ÒåPRINTFÎª0 Ôò²»±àÒëprintfº¯ÊýÄÚÈÝ£¬µ÷ÓÃprintfÃ»ÓÐÈÎºÎ²Ù×÷
+   83          //    va_list arg;
+   84          //  va_start(arg, format);
+   85          //    
+   86          //  while (*format)
+   87          //  {
+   88          //    int8 ret = *format;
+   89          //    if (ret == '%')
+   90          //    {
+   91          //      switch (*++format)
+   92          //      {
+   93          //                case 'a':// Ê®Áù½øÖÆp¼ÆÊý·¨Êä³ö¸¡µãÊý ÔÝÎ´ÊµÏÖ
+   94          //                {
+   95          //                    
+   96          //                    
+   97          //                }break;
+   98          //                
+   99          //                
+  100          //                case 'c':// Ò»¸ö×Ö·û
+  101          //                {
+  102          //                    int8 ch = (int8)va_arg(arg, uint32);
+  103          //                    uart_putchar(DEBUG_UART, (int8)ch);
+  104          //                            
+  105          //                }break;
+  106          //                
+  107          //                
+  108          //                case 'd':
+  109          //                case 'i':// ÓÐ·ûºÅÊ®½øÖÆÕûÊý
+  110          //                {
+  111          //                    int8 vstr[33];
+  112          //                    int32 ival = (int32)va_arg(arg, int32);
+  113          //                    uint8 vlen = number_conversion_ascii((uint32)ival, vstr, 1, 10);
+  114          //                    if(ival<0)  uart_putchar(DEBUG_UART, '-');
+  115          //                    printf_reverse_order(vstr,vlen);
+  116          //                    uart_putbuff(DEBUG_UART, (uint8 *)vstr,vlen);
+  117          //                }break;
+  118          //                
+  119          //                case 'f':// ¸¡µãÊý£¬Êä³öÐ¡ÊýµãºóÁùÎ»  ²»ÄÜÖ¸¶¨Êä³ö¾«¶È
+  120          //                case 'F':// ¸¡µãÊý£¬Êä³öÐ¡ÊýµãºóÁùÎ»  ²»ÄÜÖ¸¶¨Êä³ö¾«¶È
+C251 COMPILER V5.60.0,  SEEKFREE_PRINTF                                                    25/09/22  22:18:57  PAGE 3   
+
+  121          //                {
+  122          //                    int8 vstr[33];
+  123          //                    double ival = (double)va_arg(arg, double);
+  124          //                    uint8 vlen = number_conversion_ascii((uint32)(int32)ival, vstr, 1, 10);
+  125          //                    if(ival<0)  uart_putchar(DEBUG_UART, '-');
+  126          //                    printf_reverse_order(vstr,vlen);
+  127          //                    uart_putbuff(DEBUG_UART, (uint8 *)vstr,vlen);
+  128          //                    uart_putchar(DEBUG_UART, '.');
+  129          
+  130          //                    ival = ((double)ival - (int32)ival)*1000000;
+  131          //                    vlen = number_conversion_ascii((uint32)(int32)ival, vstr, 1, 10);
+  132          //              while(6>vlen)
+  133          //                    {
+  134          //                        vstr[vlen] = '0';
+  135          //                        vlen++;
+  136          //                    }
+  137          //                    printf_reverse_order(vstr,vlen);
+  138          //                    uart_putbuff(DEBUG_UART, (uint8 *)vstr,vlen);
+  139          //                    break;
+  140          //                }
+  141          //                
+  142          //                case 'u':// ÎÞ·ûºÅÊ®½øÖÆÕûÊý
+  143          //                {
+  144          //                    int8 vstr[33];
+  145          //                    uint32 ival = (uint32)va_arg(arg, uint32);
+  146          //                    uint8 vlen = number_conversion_ascii(ival, vstr, 0, 10);
+  147          //                    printf_reverse_order(vstr,vlen);
+  148          //                    uart_putbuff(DEBUG_UART, (uint8 *)vstr,vlen);
+  149          //                }break;
+  150          //                
+  151          //                case 'o':// ÎÞ·ûºÅ°Ë½øÖÆÕûÊý 
+  152          //                {
+  153          //                    int8 vstr[33];
+  154          //                    uint32 ival = (uint32)va_arg(arg, uint32);
+  155          //                    uint8 vlen = number_conversion_ascii(ival, vstr, 0, 8);
+  156          //                    printf_reverse_order(vstr,vlen);
+  157          //                    uart_putbuff(DEBUG_UART, (uint8 *)vstr,vlen);
+  158          //                    
+  159          //                }break;
+  160          //                
+  161          //                case 'x':// ÎÞ·ûºÅÊ®Áù½øÖÆÕûÊý
+  162          //                case 'X':// ÎÞ·ûºÅÊ®Áù½øÖÆÕûÊý
+  163          //                {
+  164          //                    int8 vstr[33];
+  165          //                    uint32 ival = (uint32)va_arg(arg, uint32);
+  166          //                    uint8 vlen = number_conversion_ascii(ival, vstr, 0, 16);
+  167          //                    printf_reverse_order(vstr,vlen);
+  168          //                    uart_putbuff(DEBUG_UART, (uint8 *)vstr,vlen);
+  169          //                }break;
+  170          //                
+  171          //                
+  172          //                case 's':// ×Ö·û´®
+  173          //                {
+  174          //                    int8 *pc = va_arg(arg, int8 *);
+  175          //                    while (*pc)
+  176          //                    {
+  177          //                        uart_putchar(DEBUG_UART, (int8)(*pc));
+  178          //                        pc++;
+  179          //                    }
+  180          //                }break;
+  181          //                
+  182          //                case 'p':// ÒÔ16½øÖÆÐÎÊ½Êä³öÖ¸Õë
+  183          //                {
+  184          //                    int8 vstr[33];
+  185          //                    uint32 ival = (uint32)va_arg(arg, uint32);
+  186          //                    uint8 vlen = number_conversion_ascii(ival, vstr, 0, 16);
+C251 COMPILER V5.60.0,  SEEKFREE_PRINTF                                                    25/09/22  22:18:57  PAGE 4   
+
+  187          //                    printf_reverse_order(vstr,8);
+  188          //                    uart_putbuff(DEBUG_UART, (uint8 *)vstr,8);
+  189          //                            
+  190          //                }break;
+  191          //                
+  192          //                
+  193          //                case '%':// Êä³ö×Ö·û% 
+  194          //                {
+  195          //                    uart_putchar(DEBUG_UART, '%');
+  196          //                }break;
+  197          
+  198          //                default:break;
+  199          //      }
+  200          //    }
+  201          //    else
+  202          //    {
+  203          //      uart_putchar(DEBUG_UART, (int8)(*format));
+  204          //    }
+  205          //    format++;
+  206          //  }
+  207          //  va_end(arg);
+  208          //#endif
+  209          //}
+  210          
+  211          
+  212          uint32 zf_sprintf(int8 *buff, const int8 *format, ...)
+  213          {
+  214   1          uint32 buff_len=0;
+  215   1          va_list arg;
+  216   1        va_start(arg, format);
+  217   1       
+  218   1        while (*format)
+  219   1        {
+  220   2          int8 ret = *format;
+  221   2          if (ret == '%')
+  222   2          {
+  223   3            switch (*++format)
+  224   3            {
+  225   4                      case 'a':// Ê®Áù½øÖÆp¼ÆÊý·¨Êä³ö¸¡µãÊý ÔÝÎ´ÊµÏÖ
+  226   4                      {
+  227   5                          
+  228   5                          
+  229   5                      }break;
+  230   4                      
+  231   4                      
+  232   4                      case 'c':// Ò»¸ö×Ö·û
+  233   4                      {
+  234   5                          int8 ch = (int8)va_arg(arg, uint32);
+  235   5                          *buff = ch;
+  236   5                          buff++;
+  237   5                          buff_len++;
+  238   5                                  
+  239   5                      }break;
+  240   4                      
+  241   4                      
+  242   4                      case 'd':
+  243   4                      case 'i':// ÓÐ·ûºÅÊ®½øÖÆÕûÊý
+  244   4                      {
+  245   5                          int8 vstr[33];
+  246   5                          int32 ival = (int32)va_arg(arg, int32);
+  247   5                          uint8 vlen = number_conversion_ascii((uint32)ival, vstr, 1, 10);
+  248   5                          
+  249   5                          if(ival<0)  
+  250   5                          {
+  251   6                              vstr[vlen] = '-';
+  252   6                              vlen++;
+C251 COMPILER V5.60.0,  SEEKFREE_PRINTF                                                    25/09/22  22:18:57  PAGE 5   
+
+  253   6                          }
+  254   5                          printf_reverse_order(vstr,vlen);
+  255   5                          memcpy(buff,vstr,vlen);
+  256   5                          buff += vlen;
+  257   5                          buff_len += vlen;
+  258   5                          
+  259   5                          
+  260   5                      }break;
+  261   4                      
+  262   4                      case 'f':// ¸¡µãÊý£¬Êä³öÐ¡ÊýµãºóÁùÎ»  ²»ÄÜÖ¸¶¨Êä³ö¾«¶È
+  263   4                      case 'F':// ¸¡µãÊý£¬Êä³öÐ¡ÊýµãºóÁùÎ»  ²»ÄÜÖ¸¶¨Êä³ö¾«¶È
+  264   4                      {
+  265   5                          int8 vstr[33];
+  266   5                          double ival = (double)va_arg(arg, double);
+  267   5                          uint8 vlen = number_conversion_ascii((uint32)(int32)ival, vstr, 1, 10);
+  268   5                          
+  269   5                          if(ival<0)  
+  270   5                          {
+  271   6                              vstr[vlen] = '-';
+  272   6                              vlen++;
+  273   6                          }
+  274   5                          printf_reverse_order(vstr,vlen);
+  275   5                          memcpy(buff,vstr,vlen);
+  276   5                          buff += vlen;
+  277   5                          buff_len += vlen;
+  278   5      
+  279   5                          ival = ((double)ival - (int32)ival)*1000000;
+  280   5                          if(ival)
+  281   5                          {
+  282   6                              vlen = number_conversion_ascii((uint32)(int32)ival, vstr, 1, 10);
+  283   6                          }
+  284   5                          else
+  285   5                          {
+  286   6                              vstr[0] = vstr[1] = vstr[2] = vstr[3] = vstr[4] = vstr[5] = '0';
+  287   6                              vlen = 6;
+  288   6                          }
+  289   5                
+  290   5                          while(6>vlen)
+  291   5                          {
+  292   6                              vstr[vlen] = '0';
+  293   6                              vlen++;
+  294   6                          }
+  295   5                
+  296   5                          vstr[vlen] = '.';
+  297   5                          vlen++;
+  298   5                          
+  299   5                          printf_reverse_order(vstr,vlen);
+  300   5                          memcpy(buff,vstr,vlen);
+  301   5                          buff_len += vlen;
+  302   5      
+  303   5                          break;
+  304   5                      }
+  305   4                      
+  306   4                      case 'u':// ÎÞ·ûºÅÊ®½øÖÆÕûÊý
+  307   4                      {
+  308   5                          int8 vstr[33];
+  309   5                          uint32 ival = (uint32)va_arg(arg, uint32);
+  310   5                          uint8 vlen = number_conversion_ascii(ival, vstr, 0, 10);
+  311   5                          
+  312   5                          printf_reverse_order(vstr,vlen);
+  313   5                          memcpy(buff,vstr,vlen);
+  314   5                          buff += vlen;
+  315   5                          buff_len += vlen;
+  316   5                      }break;
+  317   4                      
+  318   4                      case 'o':// ÎÞ·ûºÅ°Ë½øÖÆÕûÊý 
+C251 COMPILER V5.60.0,  SEEKFREE_PRINTF                                                    25/09/22  22:18:57  PAGE 6   
+
+  319   4                      {
+  320   5                          int8 vstr[33];
+  321   5                          uint32 ival = (uint32)va_arg(arg, uint32);
+  322   5                          uint8 vlen = number_conversion_ascii(ival, vstr, 0, 8);
+  323   5                          
+  324   5                          printf_reverse_order(vstr,vlen);
+  325   5                          memcpy(buff,vstr,vlen);
+  326   5                          buff += vlen;
+  327   5                          buff_len += vlen;
+  328   5                          
+  329   5                      }break;
+  330   4                      
+  331   4                      case 'x':// ÎÞ·ûºÅÊ®Áù½øÖÆÕûÊý
+  332   4                      case 'X':// ÎÞ·ûºÅÊ®Áù½øÖÆÕûÊý
+  333   4                      {
+  334   5                          int8 vstr[33];
+  335   5                          uint32 ival = (uint32)va_arg(arg, uint32);
+  336   5                          uint8 vlen = number_conversion_ascii(ival, vstr, 0, 16);
+  337   5                          
+  338   5                          printf_reverse_order(vstr,vlen);
+  339   5                          memcpy(buff,vstr,vlen);
+  340   5                          buff += vlen;
+  341   5                          buff_len += vlen;
+  342   5                      }break;
+  343   4                      
+  344   4                      
+  345   4                      case 's':// ×Ö·û´®
+  346   4                      {
+  347   5                          int8 *pc = va_arg(arg, int8 *);
+  348   5                          while (*pc)
+  349   5                          {
+  350   6                              *buff = *pc;
+  351   6                              buff++;
+  352   6                              buff_len++;
+  353   6                              pc++;
+  354   6                          }
+  355   5                      }break;
+  356   4                      
+  357   4                      case 'p':// ÒÔ16½øÖÆÐÎÊ½Êä³öÖ¸Õë
+  358   4                      {
+  359   5                          int8 vstr[33];
+  360   5                          uint32 ival = (uint32)va_arg(arg, uint32);
+  361   5                          //uint8 vlen = number_conversion_ascii(ival, vstr, 0, 16);
+  362   5                number_conversion_ascii(ival, vstr, 0, 16);
+  363   5                          
+  364   5                          printf_reverse_order(vstr,8);
+  365   5                          memcpy(buff,vstr,8);
+  366   5                          buff += 8;
+  367   5                          buff_len += 8;
+  368   5                                  
+  369   5                      }break;
+  370   4                      
+  371   4                      
+  372   4                      case '%':// Êä³ö×Ö·û% 
+  373   4                      {
+  374   5                          *buff = '%';
+  375   5                          buff++;
+  376   5                          buff_len++;
+  377   5                      }break;
+  378   4      
+  379   4                      default:break;
+  380   4            }
+  381   3          }
+  382   2          else
+  383   2          {
+  384   3                  *buff = (int8)(*format);
+C251 COMPILER V5.60.0,  SEEKFREE_PRINTF                                                    25/09/22  22:18:57  PAGE 7   
+
+  385   3                  buff++;
+  386   3                  buff_len++;
+  387   3          }
+  388   2          format++;
+  389   2        }
+  390   1        va_end(arg);
+  391   1      
+  392   1          return buff_len;
+  393   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =      1482     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------         96
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

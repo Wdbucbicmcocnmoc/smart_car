@@ -1,0 +1,267 @@
+C251 COMPILER V5.60.0,  Filiter                                                            15/08/22  21:31:07  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE Filiter
+OBJECT MODULE PLACED IN .\Out_File\Filiter.obj
+COMPILER INVOKED BY: D:\keil5\C251\BIN\C251.EXE Filiter.c XSMALL INTR2 WARNINGLEVEL(3) BROWSE INCDIR(..\..\Libraries\lib
+                    -raries;..\..\Libraries\seekfree_libraries;..\..\Libraries\seekfree_peripheral;..\CODE;..\USER\inc;..\USER\src) DEBUG PRI
+                    -NT(.\Out_File\Filiter.lst) TABS(2) OBJECT(.\Out_File\Filiter.obj) 
+
+stmt  level    source
+
+    1          #include "headfile.h"
+    2          #include "Filiter.h"
+    3          
+    4          
+    5          
+    6          float Accel_x;       //X轴加速度值暂存
+    7          float Accel_y;       //Y轴加速度值暂存
+    8          float Accel_z;       //Z轴加速度值暂存
+    9          
+   10          float Gyro_xx;        //X轴陀螺仪数据暂存
+   11          float Gyro_yy;        //Y轴陀螺仪数据暂存
+   12          float Gyro_zz;        //Z轴陀螺仪数据暂存
+   13          
+   14          float Angle_gx;    //由角速度计算的倾斜角度
+   15          float Angle_gyy;    //由角速度计算的倾斜角度
+   16          float Angle_gzz;    //由角速度计算的倾斜角度
+   17          
+   18          float Angle_x_temp;  //由加速度计算的x倾斜角度
+   19          float Angle_y_temp;  //由加速度计算的y倾斜角度
+   20          float Angle_z_temp;  //由加速度计算的z倾斜角度
+   21          
+   22          float Angle_X_Final; //X最终倾斜角度
+   23          float Angle_Y_Final; //Y最终倾斜角度
+   24          float Angle_Z_Final; //Z最终倾斜角度
+   25          
+   26          float ppitch=0;
+   27          
+   28          //角度计算
+   29          void Angle_Calcu()
+   30          {
+   31   1          //范围为2g时，换算关系：16384 LSB/g
+   32   1          float rad;
+   33   1          float deg = rad*180/3.14;
+   34   1          float x,y,z;
+   35   1        get_icm20602_accdata_simiic();
+   36   1          get_icm20602_gyro_simiic();
+   37   1      
+   38   1          Accel_x = icm_acc_x;    //x轴加速度值暂存
+   39   1          Accel_y = icm_acc_y;    //y轴加速度值暂存
+   40   1          Accel_z = icm_acc_z;    //z轴加速度值暂存
+   41   1          Gyro_xx  = icm_gyro_x;  //x轴陀螺仪值暂存
+   42   1          Gyro_yy  = icm_gyro_y;  //y轴陀螺仪值暂存
+   43   1          Gyro_zz  = icm_gyro_z;  //z轴陀螺仪值暂存
+   44   1      
+   45   1          //处理x轴加速度
+   46   1          if(Accel_x<32764) x=Accel_x/16384;
+   47   1          else              x=1-(Accel_x-49152)/16384;
+   48   1      
+   49   1          //处理y轴加速度
+   50   1          if(Accel_y<32764) y=Accel_y/16384;
+   51   1          else              y=1-(Accel_y-49152)/16384;
+   52   1      
+   53   1          //处理z轴加速度
+   54   1          if(Accel_z<32764) z=Accel_z/16384;
+   55   1          else              z=(Accel_z-49152)/16384;
+   56   1      
+   57   1          //用加速度计算三个轴和水平面坐标系之间的夹角
+C251 COMPILER V5.60.0,  Filiter                                                            15/08/22  21:31:07  PAGE 2   
+
+   58   1          Angle_x_temp=(atan(y/z))*180/3.1415926;
+   59   1          Angle_y_temp=(atan(x/z))*180/3.1415926;
+   60   1          Angle_z_temp=(atan(x/y))*180/3.1415926;
+   61   1      
+   62   1          //角度的正负号
+   63   1          if(Accel_x<32764) Angle_y_temp = +Angle_y_temp;
+*** WARNING C138 IN LINE 63 OF Filiter.c: expression with possibly no effect
+   64   1          if(Accel_x>32764) Angle_y_temp = -Angle_y_temp;
+   65   1          if(Accel_y<32764) Angle_x_temp = +Angle_x_temp;
+*** WARNING C138 IN LINE 65 OF Filiter.c: expression with possibly no effect
+   66   1          if(Accel_y>32764) Angle_x_temp = -Angle_x_temp;
+   67   1          if(Accel_z<32764) Angle_z_temp = +Angle_z_temp;
+*** WARNING C138 IN LINE 67 OF Filiter.c: expression with possibly no effect
+   68   1          if(Accel_z>32764) Angle_z_temp = -Angle_z_temp;
+   69   1      
+   70   1          //角速度
+   71   1          //向前运动
+   72   1          if(Gyro_xx<32768) Gyro_xx=-(Gyro_xx/16.4);//范围为1000deg/s时，换算关系：16.4 LSB/(deg/s)
+   73   1          //向后运动
+   74   1          if(Gyro_xx>32768) Gyro_xx=+(65535-Gyro_xx)/16.4;
+   75   1          //向前运动
+   76   1          if(Gyro_yy<32768) Gyro_yy=-(Gyro_yy/16.4);//范围为1000deg/s时，换算关系：16.4 LSB/(deg/s)
+   77   1          //向后运动
+   78   1          if(Gyro_yy>32768) Gyro_yy=+(65535-Gyro_yy)/16.4;
+   79   1          //向前运动
+   80   1          if(Gyro_zz<32768) Gyro_zz=-(Gyro_zz/16.4);//范围为1000deg/s时，换算关系：16.4 LSB/(deg/s)
+   81   1          //向后运动
+   82   1          if(Gyro_zz>32768) Gyro_zz=+(65535-Gyro_zz)/16.4;
+   83   1      
+   84   1          Angle_gx = Angle_gx + Gyro_xx*0.025;  //角速度积分得到倾斜角度.越大积分出来的角度
+             -越大
+   85   1          Angle_gyy = Angle_gyy + Gyro_yy*0.005;  //角速度积分得到倾斜角度.越大积分出来的角�
+             -��越大
+   86   1          Angle_gzz = Angle_gzz + Gyro_zz*0.001;  //角速度积分得到倾斜角度.越大积分出来的角�
+             -��越大
+   87   1      
+   88   1          Kalman_Filter_X(Angle_x_temp,Gyro_xx);  //卡尔曼滤波计算X倾角
+   89   1          Kalman_Filter_Y(Angle_y_temp,Gyro_yy);  //卡尔曼滤波计算Y倾角
+   90   1          Kalman_Filter_Z(Angle_z_temp,Gyro_zz);  //卡尔曼滤波计算Z倾角
+   91   1      }
+   92          
+   93          
+   94          //卡尔曼参数
+   95          float Q_angle = 0.001;
+   96          float Q_gyro  = 0.003;
+   97          float R_angle = 0.5;
+   98          float dtt      = 0.01;//dtt为kalman滤波器采样时间;
+   99          char  C_0     = 1;
+  100          float Q_bias, Angle_err;
+  101          float PCt_0, PCt_1, E;
+  102          float K_0, K_1, t_0, t_1;
+  103          float Pdot[4] ={0,0,0,0};
+  104          float PP[2][2] = { { 1, 0 },{ 0, 1 } };
+  105          
+  106          void Kalman_Filter_X(float Accel,float Gyro) //卡尔曼函数
+  107          {
+  108   1          Angle_X_Final += (Gyro_xx - Q_bias) * dtt; //先验估计
+  109   1      
+  110   1          Pdot[0]=Q_angle - PP[0][1] - PP[1][0]; // Pk-先验估计误差协方差的微分
+  111   1      
+  112   1          Pdot[1]= -PP[1][1];
+  113   1          Pdot[2]= -PP[1][1];
+  114   1          Pdot[3]= Q_gyro;
+  115   1      
+  116   1          PP[0][0] += Pdot[0] * dtt;   // Pk-先验估计误差协方差微分的积分
+  117   1          PP[0][1] += Pdot[1] * dtt;   // =先验估计误差协方差
+C251 COMPILER V5.60.0,  Filiter                                                            15/08/22  21:31:07  PAGE 3   
+
+  118   1          PP[1][0] += Pdot[2] * dtt;
+  119   1          PP[1][1] += Pdot[3] * dtt;
+  120   1      
+  121   1          Angle_err = Accel - Angle_X_Final;  //zk-先验估计
+  122   1      
+  123   1          PCt_0 = C_0 * PP[0][0];
+  124   1          PCt_1 = C_0 * PP[1][0];
+  125   1      
+  126   1          E = R_angle + C_0 * PCt_0;
+  127   1      
+  128   1          K_0 = PCt_0 / E;
+  129   1          K_1 = PCt_1 / E;
+  130   1      
+  131   1          t_0 = PCt_0;
+  132   1          t_1 = C_0 * PP[0][1];
+  133   1      
+  134   1          PP[0][0] -= K_0 * t_0;       //后验估计误差协方差
+  135   1          PP[0][1] -= K_0 * t_1;
+  136   1          PP[1][0] -= K_1 * t_0;
+  137   1          PP[1][1] -= K_1 * t_1;
+  138   1      
+  139   1          Angle_X_Final += K_0 * Angle_err;    //后验估计
+  140   1          Q_bias        += K_1 * Angle_err;    //后验估计
+  141   1          Gyro_xx         = Gyro_xx - Q_bias;  //输出值(后验估计)的微分=角速度
+  142   1      }
+*** WARNING C47 IN LINE 106 OF Filiter.c: 'Gyro': unreferenced parameter
+  143          
+  144          void Kalman_Filter_Y(float Accel,float Gyro) //卡尔曼函数
+  145          {
+  146   1          Angle_Y_Final += (Gyro - Q_bias) * dtt; //先验估计
+  147   1      
+  148   1          Pdot[0]=Q_angle - PP[0][1] - PP[1][0]; // Pk-先验估计误差协方差的微分
+  149   1      
+  150   1          Pdot[1]=- PP[1][1];
+  151   1          Pdot[2]=- PP[1][1];
+  152   1          Pdot[3]=Q_gyro;
+  153   1      
+  154   1          PP[0][0] += Pdot[0] * dtt;   // Pk-先验估计误差协方差微分的积分
+  155   1          PP[0][1] += Pdot[1] * dtt;   // =先验估计误差协方差
+  156   1          PP[1][0] += Pdot[2] * dtt;
+  157   1          PP[1][1] += Pdot[3] * dtt;
+  158   1      
+  159   1          Angle_err = Accel - Angle_Y_Final;  //zk-先验估计
+  160   1      
+  161   1          PCt_0 = C_0 * PP[0][0];
+  162   1          PCt_1 = C_0 * PP[1][0];
+  163   1      
+  164   1          E = R_angle + C_0 * PCt_0;
+  165   1      
+  166   1          K_0 = PCt_0 / E;
+  167   1          K_1 = PCt_1 / E;
+  168   1      
+  169   1          t_0 = PCt_0;
+  170   1          t_1 = C_0 * PP[0][1];
+  171   1      
+  172   1          PP[0][0] -= K_0 * t_0;       //后验估计误差协方差
+  173   1          PP[0][1] -= K_0 * t_1;
+  174   1          PP[1][0] -= K_1 * t_0;
+  175   1          PP[1][1] -= K_1 * t_1;
+  176   1      
+  177   1          Angle_Y_Final   += K_0 * Angle_err;  //后验估计
+  178   1          Q_bias  += K_1 * Angle_err;  //后验估计
+  179   1          Gyro_yy   = Gyro - Q_bias;    //输出值(后验估计)的微分=角速度
+  180   1      }
+  181          
+  182          void Kalman_Filter_Z(float Accel,float Gyro) //卡尔曼函数
+C251 COMPILER V5.60.0,  Filiter                                                            15/08/22  21:31:07  PAGE 4   
+
+  183          {
+  184   1          Angle_Z_Final += (Gyro - Q_bias) * dtt; //先验估计
+  185   1      
+  186   1          Pdot[0]=Q_angle - PP[0][1] - PP[1][0]; // Pk-先验估计误差协方差的微分
+  187   1      
+  188   1          Pdot[1]=- PP[1][1];
+  189   1          Pdot[2]=- PP[1][1];
+  190   1          Pdot[3]=Q_gyro;
+  191   1      
+  192   1          PP[0][0] += Pdot[0] * dtt;   // Pk-先验估计误差协方差微分的积分
+  193   1          PP[0][1] += Pdot[1] * dtt;   // =先验估计误差协方差
+  194   1          PP[1][0] += Pdot[2] * dtt;
+  195   1          PP[1][1] += Pdot[3] * dtt;
+  196   1      
+  197   1          Angle_err = Accel - Angle_Z_Final;  //zk-先验估计
+  198   1      
+  199   1          PCt_0 = C_0 * PP[0][0];
+  200   1          PCt_1 = C_0 * PP[1][0];
+  201   1      
+  202   1          E = R_angle + C_0 * PCt_0;
+  203   1      
+  204   1          K_0 = PCt_0 / E;
+  205   1          K_1 = PCt_1 / E;
+  206   1      
+  207   1          t_0 = PCt_0;
+  208   1          t_1 = C_0 * PP[0][1];
+  209   1      
+  210   1          PP[0][0] -= K_0 * t_0;       //后验估计误差协方差
+  211   1          PP[0][1] -= K_0 * t_1;
+  212   1          PP[1][0] -= K_1 * t_0;
+  213   1          PP[1][1] -= K_1 * t_1;
+  214   1      
+  215   1          Angle_Z_Final   += K_0 * Angle_err;  //后验估计
+  216   1          Q_bias  += K_1 * Angle_err;  //后验估计
+  217   1          Gyro_zz   = Gyro - Q_bias;    //输出值(后验估计)的微分=角速度
+  218   1      }
+*** WARNING C183 IN LINE 33 OF Filiter.c: dead assignment eliminated
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =      2074     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =       149          8
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =        85     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  5 WARNING(S),  0 ERROR(S)

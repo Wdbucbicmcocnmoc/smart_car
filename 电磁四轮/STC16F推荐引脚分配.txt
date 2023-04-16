@@ -1,0 +1,47 @@
+屏幕 (硬件SPI)
+SCL			P25
+SDA			P23
+RST			P20
+DC			P21
+CS			P22
+BL			P27
+
+无线串口 
+TX(TIM2) 			P03 
+RX(TIM2)  		P02 
+RTS 			任意IO
+
+运放 
+ADC			P00 
+ADC			P01 
+ADC			P05 
+ADC			P06
+
+编码器 
+DIR 			任意IO
+LSB(TIM0) 		P34
+
+DIR 			任意IO
+LSB(TIM3) 		P04
+
+ICM20602(软件SPI):
+SPC			任意IO
+SDI			任意IO
+SDO			任意IO
+CS			任意IO
+
+电机
+PWMA_CH1		P60 
+PWMA_CH2		P62 
+PWMA_CH3		P64 
+PWMA_CH4		P66
+
+舵机
+PWMB_CH1		P74
+
+
+不建议使用的引脚：
+核心板上的type-c连接的串口	P30 P31 
+核心板上的晶振 		P16 P17 
+核心板上的LED 		P52
+核心板上的复位 		P54

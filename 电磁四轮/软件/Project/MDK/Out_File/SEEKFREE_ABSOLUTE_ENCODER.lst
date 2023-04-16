@@ -1,0 +1,496 @@
+C251 COMPILER V5.60.0,  SEEKFREE_ABSOLUTE_ENCODER                                          25/09/22  22:19:00  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE SEEKFREE_ABSOLUTE_ENCODER
+OBJECT MODULE PLACED IN .\Out_File\SEEKFREE_ABSOLUTE_ENCODER.obj
+COMPILER INVOKED BY: D:\Keil_v5\C251\BIN\C251.EXE ..\..\Libraries\seekfree_peripheral\SEEKFREE_ABSOLUTE_ENCODER.c XSMALL
+                    - INTR2 WARNINGLEVEL(3) BROWSE INCDIR(..\..\Libraries\libraries;..\..\Libraries\seekfree_libraries;..\..\Libraries\seekfr
+                    -ee_peripheral;..\CODE;..\USER\inc;..\USER\src) DEBUG PRINT(.\Out_File\SEEKFREE_ABSOLUTE_ENCODER.lst) TABS(2) OBJECT(.\Ou
+                    -t_File\SEEKFREE_ABSOLUTE_ENCODER.obj) 
+
+stmt  level    source
+
+    1          /********************************************************************************************************
+             -*************
+    2           * COPYRIGHT NOTICE
+    3           * Copyright (c) 2018,逐飞科技
+    4           * All rights reserved.
+    5           * 技术讨论QQ群：179029047
+    6           *
+    7           * 以下所有内容版权均属逐飞科技所有，未经允许不得用于商业用途，
+    8           * 欢迎各位使用并传播本程序，修改内容时必须保留逐飞科技的版权声明。
+    9           *
+   10           * @file          绝对式编码器
+   11           * @company       成都逐飞科技有限公司
+   12           * @author        逐飞科技(QQ3184284598)
+   13           * @version       查看LPC546XX_config.h文件内版本宏定义
+   14           * @Software    MDK FOR C251 V5.60a
+   15           * @Target core   LPC54606J512BD100
+   16           * @Taobao      https://seekfree.taobao.com/
+   17           * @date          2020-01-13
+   18           * @note    
+   19                    接线定义：
+   20                    ------------------------------------ 
+   21                    模块管脚            单片机管脚
+   22                    SCK             查看SEEKFREE_ABSOLUTE_ENCODER.H文件ABS_ENCODER_SPI_SCK_PIN 宏定义
+   23                    MISO              查看SEEKFREE_ABSOLUTE_ENCODER.H文件ABS_ENCODER_SPI_MISO_PIN宏定义
+   24                    MOSI                查看SEEKFREE_ABSOLUTE_ENCODER.H文件ABS_ENCODER_SPI_MOSI_PIN宏定义
+   25                    CS                  查看SEEKFREE_ABSOLUTE_ENCODER.H文件ABS_ENCODER_SPI_PCS_PIN  宏定义
+   26                    ------------------------------------  
+   27           ********************************************************************************************************
+             -************/
+   28          
+   29          #include "SEEKFREE_ABSOLUTE_ENCODER.h"
+   30          #include "zf_spi.h"
+   31          #include "zf_delay.h"
+   32          
+   33          
+   34          //-------------------------以下为软件SPI--------------------------//
+   35          //-------------------------以下为软件SPI--------------------------//
+   36          //-------------------------以下为软件SPI--------------------------//
+   37          
+   38          //-------------------------------------------------------------------------------------------------------
+             -------------
+   39          //  @brief      内部使用用户无需关心
+   40          //  @param      NULL              
+   41          //  @return     void
+   42          //  Sample usage:               无需用户调用，用户请使用h文件中的宏定义
+   43          //-------------------------------------------------------------------------------------------------------
+             -------------
+   44          void encoder_delay_us(uint16 x)
+   45          {
+   46   1        delay_us(x);
+   47   1      }
+   48          
+   49          
+   50          //-------------------------------------------------------------------------------------------------------
+             -------------
+   51          //  @brief      通过SPI写一个byte,同时读取一个byte
+C251 COMPILER V5.60.0,  SEEKFREE_ABSOLUTE_ENCODER                                          25/09/22  22:19:00  PAGE 2   
+
+   52          //  @param      byte        发送的数据    
+   53          //  @return     uint8       return 返回status状态
+   54          //  @since      v1.0
+   55          //  Sample usage:
+   56          //-------------------------------------------------------------------------------------------------------
+             -------------
+   57          uint8 simspi_wr_byte(uint8 byte)
+   58          {
+   59   1          uint8 i;
+   60   1          for(i=0; i<8; i++)
+   61   1          {
+   62   2              ABS_ENCODER_MOSI(byte & 0x80);
+   63   2              byte <<= 1;
+   64   2              ABS_ENCODER_SCK (0);    
+   65   2            
+   66   2              ABS_ENCODER_SCK (1);
+   67   2          byte |= ABS_ENCODER_MISO;  
+   68   2          } 
+   69   1          return(byte);                                         
+   70   1      }
+   71          
+   72          //-------------------------------------------------------------------------------------------------------
+             -------------
+   73          //  @brief      将val写入cmd对应的寄存器地址,同时返回status字节
+   74          //  @param      cmd         命令字
+   75          //  @param      val         待写入寄存器的数值
+   76          //  @since      v1.0
+   77          //  Sample usage:
+   78          //-------------------------------------------------------------------------------------------------------
+             -------------
+   79          void simspi_w_reg_byte(uint8 cmd, uint8 val)
+   80          {
+   81   1          ABS_ENCODER_CSN (0);
+   82   1          cmd |= ABS_ENCODER_SPI_W;
+   83   1          simspi_wr_byte(cmd);                        
+   84   1          simspi_wr_byte(val);                                
+   85   1          ABS_ENCODER_CSN (1);                                      
+   86   1      }
+   87          
+   88          //-------------------------------------------------------------------------------------------------------
+             -------------
+   89          //  @brief      读取cmd所对应的寄存器地址
+   90          //  @param      cmd         命令字
+   91          //  @param      *val        存储读取的数据地址
+   92          //  @since      v1.0
+   93          //  Sample usage:
+   94          //-------------------------------------------------------------------------------------------------------
+             -------------
+   95          void simspi_r_reg_byte(uint8 cmd, uint8 *val)
+   96          {
+   97   1          ABS_ENCODER_CSN (0);
+   98   1          cmd |= ABS_ENCODER_SPI_R;
+   99   1          simspi_wr_byte(cmd);                                
+  100   1          *val = simspi_wr_byte(0);                             
+  101   1          ABS_ENCODER_CSN (1);                                      
+  102   1      }
+  103          
+  104          
+  105          //-------------------------------------------------------------------------------------------------------
+             -------------
+  106          //  @brief      写入一个数据到编码器的寄存器
+  107          //  @param      cmd         寄存器地址
+  108          //  @param      *val        写入数据的地址
+  109          //  @return     uint8       0：程序  1：失败
+  110          //  @since      v1.0
+  111          //  Sample usage:
+C251 COMPILER V5.60.0,  SEEKFREE_ABSOLUTE_ENCODER                                          25/09/22  22:19:00  PAGE 3   
+
+  112          //-------------------------------------------------------------------------------------------------------
+             -------------
+  113          uint8 encoder_simspi_w_reg_byte(uint8 cmd, uint8 val)
+  114          {
+  115   1        
+  116   1          uint8 dat;
+  117   1          ABS_ENCODER_CSN (0);
+  118   1          cmd |= ABS_ENCODER_SPI_W;
+  119   1          simspi_wr_byte(cmd);                        
+  120   1          simspi_wr_byte(val);                                
+  121   1          ABS_ENCODER_CSN (1);   
+  122   1          encoder_delay_us(1);
+  123   1          ABS_ENCODER_CSN (0);
+  124   1          dat = simspi_wr_byte(0x00);                       
+  125   1          simspi_wr_byte(0x00);                                 
+  126   1          ABS_ENCODER_CSN (1);  
+  127   1          
+  128   1          if(val != dat)  return 1;   //写入失败
+  129   1          return 0;                   //写入成功
+  130   1      }
+  131          
+  132          //-------------------------------------------------------------------------------------------------------
+             -------------
+  133          //  @brief      读取寄存器
+  134          //  @param      cmd         寄存器地址
+  135          //  @param      *val        存储读取的数据地址
+  136          //  @return     void
+  137          //  @since      v1.0
+  138          //  Sample usage:
+  139          //-------------------------------------------------------------------------------------------------------
+             -------------
+  140          void encoder_simspi_r_reg_byte(uint8 cmd, uint8 *val)
+  141          {
+  142   1          ABS_ENCODER_CSN (0);
+  143   1          cmd |= ABS_ENCODER_SPI_R;
+  144   1          simspi_wr_byte(cmd);                        
+  145   1          simspi_wr_byte(0x00);                                 
+  146   1          ABS_ENCODER_CSN (1);   
+  147   1        encoder_delay_us(1);
+  148   1          ABS_ENCODER_CSN (0);
+  149   1          *val = simspi_wr_byte(0x00);                        
+  150   1          simspi_wr_byte(0x00);                                 
+  151   1          ABS_ENCODER_CSN (1);
+  152   1      }
+  153          
+  154          //-------------------------------------------------------------------------------------------------------
+             -------------
+  155          //  @brief      设置零偏
+  156          //  @param      zero_position  需要设置的零偏
+  157          //  @return     void
+  158          //  @since      v1.0
+  159          //  Sample usage:
+  160          //-------------------------------------------------------------------------------------------------------
+             -------------
+  161          void set_zero_position_simspi(uint16 zero_position)
+  162          {    
+  163   1          zero_position = (uint16)(4096 - zero_position);
+  164   1          zero_position = zero_position << 4;
+  165   1          encoder_simspi_w_reg_byte(ZERO_L_REG,(uint8)zero_position);//设置零位
+  166   1          encoder_simspi_w_reg_byte(ZERO_H_REG,(uint8)(zero_position>>8));
+  167   1      }
+  168          
+  169          //-------------------------------------------------------------------------------------------------------
+             -------------
+  170          //  @brief      写入一个数据到编码器的寄存器
+  171          //  @param      void
+C251 COMPILER V5.60.0,  SEEKFREE_ABSOLUTE_ENCODER                                          25/09/22  22:19:00  PAGE 4   
+
+  172          //  @return     uint16       返回角度值0-4096 对应0-360°
+  173          //  @since      v1.0
+  174          //  Sample usage:
+  175          //-------------------------------------------------------------------------------------------------------
+             -------------
+  176          uint16 encoder_angle_simspi(void)
+  177          {
+  178   1          uint16 angle;
+  179   1      
+  180   1          ABS_ENCODER_CSN (0);
+  181   1          angle = simspi_wr_byte(0x00);      
+  182   1          angle <<= 8;                    //存储高八位
+  183   1          angle |= simspi_wr_byte(0x00);  //存储低八位
+  184   1          ABS_ENCODER_CSN (1);   
+  185   1          
+  186   1          return (angle>>4);              //12位精度，因此右移四位                 
+  187   1      }
+  188          
+  189          
+  190          
+  191          //-------------------------------------------------------------------------------------------------------
+             -------------
+  192          //  @brief      编码器自检函数
+  193          //  @param      NULL
+  194          //  @return     void          
+  195          //  @since      v1.0
+  196          //  Sample usage:       
+  197          //-------------------------------------------------------------------------------------------------------
+             -------------
+  198          void encoder_self4_check(void)
+  199          {
+  200   1          uint8 val;
+  201   1          do
+  202   1          {
+  203   2              encoder_simspi_r_reg_byte(6,&val);
+  204   2        
+  205   2              //卡在这里原因有以下几点
+  206   2              //1 编码器坏了，如果是新的这样的概率极低
+  207   2              //2 接线错误或者没有接好
+  208   2          }while(0x1C != val);
+  209   1      }
+  210          
+  211          //-------------------------------------------------------------------------------------------------------
+             -------------
+  212          //  @brief      编码器初始化函数
+  213          //  @param      NULL
+  214          //  @return     void          
+  215          //  @since      v1.0
+  216          //  Sample usage:       
+  217          //-------------------------------------------------------------------------------------------------------
+             -------------
+  218          void encoder_init_simspi(void)
+  219          {
+  220   1          encoder_self4_check();          //自检
+  221   1          
+  222   1          encoder_simspi_w_reg_byte(DIR_REG,0x00);//设置旋转方向 正转数值变小：0x00   反转数值变大：0x80
+  223   1      
+  224   1          set_zero_position_simspi(0);             //设置零偏
+  225   1      }
+  226          
+  227          
+  228          //-------------------------以上为软件SPI--------------------------//
+  229          //-------------------------以上为软件SPI--------------------------//
+  230          //-------------------------以上为软件SPI--------------------------//
+  231          
+  232          
+C251 COMPILER V5.60.0,  SEEKFREE_ABSOLUTE_ENCODER                                          25/09/22  22:19:00  PAGE 5   
+
+  233          //-------------------------以下为硬件SPI--------------------------//
+  234          //-------------------------以下为硬件SPI--------------------------//
+  235          //-------------------------以下为硬件SPI--------------------------//
+  236          
+  237          //-------------------------------------------------------------------------------------------------------
+             -------------
+  238          //  @brief      通过SPI写一个byte,同时读取一个byte
+  239          //  @param      byte        发送的数据    
+  240          //  @return     uint8       return 返回status状态
+  241          //  @since      v1.0
+  242          //  Sample usage:
+  243          //-------------------------------------------------------------------------------------------------------
+             -------------
+  244          uint8 spi_wr_byte(uint8 byte)
+  245          {  
+  246   1        byte = spi_mosi(byte);
+  247   1        return(byte);   
+  248   1      }
+  249          
+  250          //-------------------------------------------------------------------------------------------------------
+             -------------
+  251          //  @brief      将val写入cmd对应的寄存器地址,同时返回status字节
+  252          //  @param      cmd         命令字
+  253          //  @param      val         待写入寄存器的数值
+  254          //  @since      v1.0
+  255          //  Sample usage:
+  256          //-------------------------------------------------------------------------------------------------------
+             -------------
+  257          void spi_w_reg_byte(uint8 cmd, uint8 val)
+  258          {
+  259   1          ABS_ENCODER_SPI_CSN (0);
+  260   1          cmd |= ABS_ENCODER_SPI_W;
+  261   1          spi_wr_byte(cmd);                       
+  262   1          spi_wr_byte(val);                                 
+  263   1          ABS_ENCODER_SPI_CSN (1);       
+  264   1      }
+  265          
+  266          //-------------------------------------------------------------------------------------------------------
+             -------------
+  267          //  @brief      读取cmd所对应的寄存器地址
+  268          //  @param      cmd         命令字
+  269          //  @param      *val        存储读取的数据地址
+  270          //  @since      v1.0
+  271          //  Sample usage:
+  272          //-------------------------------------------------------------------------------------------------------
+             -------------
+  273          void spi_r_reg_byte(uint8 cmd, uint8 *val)
+  274          {
+  275   1          ABS_ENCODER_SPI_CSN (0);
+  276   1          cmd |= ABS_ENCODER_SPI_R;
+  277   1          spi_wr_byte(cmd);                                 
+  278   1          *val = simspi_wr_byte(0);                             
+  279   1          ABS_ENCODER_SPI_CSN (1);                                      
+  280   1      }
+  281          
+  282          
+  283          //-------------------------------------------------------------------------------------------------------
+             -------------
+  284          //  @brief      写入一个数据到编码器的寄存器
+  285          //  @param      cmd         寄存器地址
+  286          //  @param      *val        写入数据的地址
+  287          //  @return     uint8       0：程序  1：失败
+  288          //  @since      v1.0
+  289          //  Sample usage:
+  290          //-------------------------------------------------------------------------------------------------------
+             -------------
+C251 COMPILER V5.60.0,  SEEKFREE_ABSOLUTE_ENCODER                                          25/09/22  22:19:00  PAGE 6   
+
+  291          uint8 encoder_spi_w_reg_byte(uint8 cmd, uint8 val)
+  292          {
+  293   1          uint8 dat;
+  294   1          ABS_ENCODER_SPI_CSN (0);
+  295   1          cmd |= ABS_ENCODER_SPI_W;
+  296   1          spi_wr_byte(cmd);                       
+  297   1          spi_wr_byte(val);                                 
+  298   1          ABS_ENCODER_SPI_CSN (1);   
+  299   1        encoder_delay_us(1);
+  300   1          ABS_ENCODER_SPI_CSN (0);
+  301   1          dat = spi_wr_byte(0x00);                        
+  302   1          spi_wr_byte(0x00);                                
+  303   1          ABS_ENCODER_SPI_CSN (1);  
+  304   1          
+  305   1          if(val != dat)  return 1;   //写入失败
+  306   1          return 0;                   //写入成功
+  307   1      }
+  308          
+  309          //-------------------------------------------------------------------------------------------------------
+             -------------
+  310          //  @brief      读取寄存器
+  311          //  @param      cmd         寄存器地址
+  312          //  @param      *val        存储读取的数据地址
+  313          //  @return     void
+  314          //  @since      v1.0
+  315          //  Sample usage:
+  316          //-------------------------------------------------------------------------------------------------------
+             -------------
+  317          void encoder_spi_r_reg_byte(uint8 cmd, uint8 *val)
+  318          {
+  319   1          ABS_ENCODER_SPI_CSN (0);
+  320   1          cmd |= ABS_ENCODER_SPI_R;
+  321   1          spi_wr_byte(cmd);                       
+  322   1          spi_wr_byte(0x00);   
+  323   1      
+  324   1          ABS_ENCODER_SPI_CSN (1);   
+  325   1        encoder_delay_us(1);
+  326   1          ABS_ENCODER_SPI_CSN (0);
+  327   1          *val = spi_wr_byte(0x00);                       
+  328   1          spi_wr_byte(0x00);                                
+  329   1          ABS_ENCODER_SPI_CSN (1);
+  330   1      }
+  331          
+  332          //-------------------------------------------------------------------------------------------------------
+             -------------
+  333          //  @brief      设置零偏
+  334          //  @param      zero_position  需要设置的零偏
+  335          //  @return     void
+  336          //  @since      v1.0
+  337          //  Sample usage:
+  338          //-------------------------------------------------------------------------------------------------------
+             -------------
+  339          void set_zero_position_spi(uint16 zero_position)
+  340          {    
+  341   1          zero_position = (uint16)(4096 - zero_position);
+  342   1          zero_position = zero_position << 4;
+  343   1          encoder_spi_w_reg_byte(ZERO_L_REG,(uint8)zero_position);//设置零位
+  344   1          encoder_spi_w_reg_byte(ZERO_H_REG,(uint8)(zero_position>>8));
+  345   1      }
+  346          
+  347          //-------------------------------------------------------------------------------------------------------
+             -------------
+  348          //  @brief      写入一个数据到编码器的寄存器
+  349          //  @param      void
+  350          //  @return     uint16       返回角度值0-4096 对应0-360°
+  351          //  @since      v1.0
+C251 COMPILER V5.60.0,  SEEKFREE_ABSOLUTE_ENCODER                                          25/09/22  22:19:00  PAGE 7   
+
+  352          //  Sample usage:
+  353          //-------------------------------------------------------------------------------------------------------
+             -------------
+  354          uint16 encoder_angle_spi(void)
+  355          {
+  356   1          uint16 angle;
+  357   1          ABS_ENCODER_SPI_CSN (0);
+  358   1          angle = (uint16)spi_wr_byte(0x00);      
+  359   1          angle <<= 8;                    //存储高八位
+  360   1          angle |= (uint16)spi_wr_byte(0x00);  //存储低八位
+  361   1          ABS_ENCODER_SPI_CSN (1);   
+  362   1          
+  363   1          return (angle>>4);              //12位精度，因此右移四位                 
+  364   1      }
+  365          
+  366          
+  367          //-------------------------------------------------------------------------------------------------------
+             -------------
+  368          //  @brief      编码器自检函数
+  369          //  @param      NULL
+  370          //  @return     void          
+  371          //  @since      v1.0
+  372          //  Sample usage:       
+  373          //-------------------------------------------------------------------------------------------------------
+             -------------
+  374          void encoder_self5_check(void)
+  375          {
+  376   1        uint8 val;
+  377   1          do
+  378   1          {
+  379   2              encoder_spi_r_reg_byte(6,&val);
+  380   2              //卡在这里原因有以下几点
+  381   2              //1 编码器坏了，如果是新的这样的概率极低
+  382   2              //2 接线错误或者没有接好
+  383   2          }while(0x1C != val);
+  384   1      }
+  385          
+  386          //-------------------------------------------------------------------------------------------------------
+             -------------
+  387          //  @brief      编码器初始化函数
+  388          //  @param      NULL
+  389          //  @return     void          
+  390          //  @since      v1.0
+  391          //  Sample usage:       
+  392          //-------------------------------------------------------------------------------------------------------
+             -------------
+  393          void encoder_init_spi(void)
+  394          {
+  395   1        spi_init(ABS_ENCODER_SPI_NUM, ABS_ENCODER_SPI_SCK_PIN, ABS_ENCODER_SPI_MOSI_PIN,ABS_ENCODER_SPI_MISO_PIN
+             -, 0, MASTER, SPI_SYSclk_DIV_4);
+  396   1      
+  397   1        encoder_self5_check();
+  398   1        encoder_spi_w_reg_byte(DIR_REG,0x00);//设置旋转方向 正转数值变小：0x00   反转数值变大：0x80
+  399   1        set_zero_position_spi(0);                   //设置零偏
+  400   1      }
+  401          
+  402          
+  403          //-------------------------以上为硬件SPI--------------------------//
+  404          //-------------------------以上为硬件SPI--------------------------//
+  405          //-------------------------以上为硬件SPI--------------------------//
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =       586     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+C251 COMPILER V5.60.0,  SEEKFREE_ABSOLUTE_ENCODER                                          25/09/22  22:19:00  PAGE 8   
+
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------          2
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

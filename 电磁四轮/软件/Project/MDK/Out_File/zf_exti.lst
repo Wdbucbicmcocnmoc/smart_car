@@ -1,0 +1,100 @@
+C251 COMPILER V5.60.0,  zf_exti                                                            25/09/22  22:18:58  PAGE 1   
+
+
+C251 COMPILER V5.60.0, COMPILATION OF MODULE zf_exti
+OBJECT MODULE PLACED IN .\Out_File\zf_exti.obj
+COMPILER INVOKED BY: D:\Keil_v5\C251\BIN\C251.EXE ..\..\Libraries\seekfree_libraries\zf_exti.c XSMALL INTR2 WARNINGLEVEL
+                    -(3) BROWSE INCDIR(..\..\Libraries\libraries;..\..\Libraries\seekfree_libraries;..\..\Libraries\seekfree_peripheral;..\CO
+                    -DE;..\USER\inc;..\USER\src) DEBUG PRINT(.\Out_File\zf_exti.lst) TABS(2) OBJECT(.\Out_File\zf_exti.obj) 
+
+stmt  level    source
+
+    1          /********************************************************************************************************
+             -*************
+    2           * COPYRIGHT NOTICE
+    3           * Copyright (c) 2020,逐飞科技
+    4           * All rights reserved.
+    5           * 技术讨论QQ群：一群：179029047(已满)  二群：244861897(已满)  三群：824575535
+    6           *
+    7           * 以下所有内容版权均属逐飞科技所有，未经允许不得用于商业用途，
+    8           * 欢迎各位使用并传播本程序，修改内容时必须保留逐飞科技的版权声明。
+    9           *
+   10           * @file          exti
+   11           * @company       成都逐飞科技有限公司
+   12           * @author        逐飞科技(QQ790875685)
+   13           * @version       查看doc内version文件 版本说明
+   14           * @Software    MDK FOR C251 V5.60
+   15           * @Target core   STC16F40K128
+   16           * @Taobao      https://seekfree.taobao.com/
+   17           * @date          2020-4-14
+   18           ********************************************************************************************************
+             -************/
+   19          
+   20          
+   21          #include "zf_exti.h"
+   22          
+   23          
+   24          //-------------------------------------------------------------------------------------------------------
+             -------------
+   25          //  @brief      外部中断初始化
+   26          //  @param      NULL              
+   27          //  @return     void
+   28          //  Sample usage:               exit_init(INT0_P32,BOTH) //初始化P32 作为外部中断引脚，双边沿触发。
+   29          //-------------------------------------------------------------------------------------------------------
+             -------------
+   30          void exit_init(INTN_enum int_n,INT_MODE_enum mode)
+   31          {
+   32   1        if(INT0_P32 == int_n)
+   33   1        {
+   34   2          IT0 = mode;
+   35   2          EX0 = 1;    //使能INT0中断
+   36   2        }
+   37   1      
+   38   1        if(INT1_P33 == int_n)
+   39   1        {
+   40   2          IT1 = mode;
+   41   2          EX1 = 1;    //使能INT1中断
+   42   2        }
+   43   1        
+   44   1        if(INT2_P36 == int_n)
+   45   1        {
+   46   2          INTCLKO |= 1<<4;  //使能INT2中断
+   47   2        }
+   48   1        
+   49   1        if(INT3_P37 == int_n)
+   50   1        {
+   51   2          INTCLKO |= 1<<5;  //使能INT3中断
+   52   2        }
+   53   1        
+C251 COMPILER V5.60.0,  zf_exti                                                            25/09/22  22:18:58  PAGE 2   
+
+   54   1        if(INT4_P30 == int_n)
+   55   1        {
+   56   2          INTCLKO |= 1<<6;  //使能INT4中断
+   57   2        }
+   58   1      
+   59   1      }
+
+
+Module Information          Static   Overlayable
+------------------------------------------------
+  code size            =        62     ------
+  ecode size           =    ------     ------
+  data size            =    ------     ------
+  idata size           =    ------     ------
+  pdata size           =    ------     ------
+  xdata size           =    ------     ------
+  xdata-const size     =    ------     ------
+  edata size           =    ------     ------
+  bit size             =    ------     ------
+  ebit size            =    ------     ------
+  bitaddressable size  =    ------     ------
+  ebitaddressable size =    ------     ------
+  far data size        =    ------     ------
+  huge data size       =    ------     ------
+  const size           =    ------     ------
+  hconst size          =    ------     ------
+End of Module Information.
+
+
+C251 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
